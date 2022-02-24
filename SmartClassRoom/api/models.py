@@ -11,7 +11,7 @@ class Classroom(models.Model):
   
 class MessurementStation(models.Model):
   Station_Name = models.CharField(max_length=50)
-  Locaton = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+  location = models.ForeignKey(Classroom, on_delete=models.CASCADE)
   
 
 
