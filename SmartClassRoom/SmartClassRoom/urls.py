@@ -26,8 +26,8 @@ from rest_framework_simplejwt.views import (
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-router.register(r'Stations', views.MessurementStationViewSet)
-router.register(r'Messurements', views.MessurementsSerializer)
+router.register(r'Stations', views.MeasurementStationViewSet)
+router.register(r'Measurements', views.MeasurementsSerializer)
 router.register(r'Classrooms', views.ClassroomViewSet)
 
 urlpatterns = [

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from .models import Classroom, MeasurementStation, measurement
+from .models import Classroom, MeasurementStation, Measurement
 from rest_framework import viewsets
 from rest_framework import permissions
 from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer
@@ -22,29 +22,28 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class ClassroomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
-    
 
-class MessurementStationViewSet(viewsets.ModelViewSet):
+
+class MeasurementStationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = MeasurementStation.objects.all()
     serializer_class = MeasurementStationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
-    
-class MessurementsSerializer(viewsets.ModelViewSet):
+
+
+class MeasurementsSerializer(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = measurement.objects.all()
+    queryset = Measurement.objects.all()
     serializer_class = MeasurementsSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
-    

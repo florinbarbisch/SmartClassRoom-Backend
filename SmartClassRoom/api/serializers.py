@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import measurement, Classroom, MeasurementStation
+from .models import Measurement, Classroom, MeasurementStation
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -13,6 +14,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
+
 class ClassroomSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Classroom
@@ -23,9 +25,9 @@ class MeasurementStationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MeasurementStation
         fields = ['Station_Name', 'location', 'ip_address', 'Classroom']
-        
+
 
 class MeasurementsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = measurement
-        fields = ['Station' , 'measurement_co2', 'measurement_time', 'measurement_humidity' ]
+        model = Measurement
+        fields = ['Station', 'measurement_co2', 'measurement_time', 'measurement_humidity']
