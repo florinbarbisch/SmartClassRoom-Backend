@@ -18,7 +18,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class ClassroomSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Classroom
-        fields = ['classroom_name', 'description', 'room_number', 'updated_on']
+        fields = ['name', 'description', 'room_number', 'updated_on']
 
 
 class MeasurementStationSerializer(serializers.HyperlinkedModelSerializer):
