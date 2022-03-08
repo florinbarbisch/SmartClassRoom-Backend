@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 import json
-from datetime import datetime
+from django.utils import timezone
 
 client_id = 'mqtt_django_backend'
 
@@ -26,7 +26,7 @@ def on_message(client, userdata, msg):
 
     from api.models import MeasurementStation, Measurement
     s = MeasurementStation.objects.get(name='x raspberry')
-    m = Measurement(fk_measurement_station=s, measurement_time=datetime.now(), time=datetime.now(), co2=data['co2'],
+    m = Measurement(fk_measurement_station=s, measurement_time=timezone.now(), time=timezone.now(), co2=data['co2'],
                     temperature=data['temperature'], humidity=data['humidity'], motion=data['motion'],
                     light=data['light'])
 
