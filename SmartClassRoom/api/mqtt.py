@@ -1,5 +1,4 @@
 import paho.mqtt.client as mqtt
-from api.models import Classroom
 
 client_id = 'AA0aHiQwMQALKwAmNSUDDSw'
 
@@ -17,7 +16,7 @@ def on_message(client, userdata, msg):
     qos = msg.qos
     retain = msg.retain
     print(json)
-
+    from api.models import Classroom
     c = Classroom(name='sample', description='sample', room_number='sample', updated_on='sample')
     c.save()
 
