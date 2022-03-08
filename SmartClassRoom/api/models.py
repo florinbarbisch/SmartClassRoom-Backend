@@ -47,7 +47,7 @@ class Measurement(TimescaleModel):
 
 
 class EntranceEvent(TimescaleModel):
-    fk_classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
     change = models.IntegerField()
     measurement_time = TimescaleDateTimeField(interval="1 millisecond")
 
