@@ -6,8 +6,6 @@ client_id = 'mqtt_django_backend'
 
 
 def on_connect(client, userdata, flags, rc):
-    print('Trying to connect')
-    print(rc)
     if rc == 0:
         client.subscribe("fhnw/classroom/x/")
     else:
