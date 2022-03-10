@@ -1,6 +1,7 @@
+from datetime import datetime
 import paho.mqtt.client as mqtt
 import json
-from django.utils import timezone
+from django.utils import timezone, dateparse
 
 client_id = 'mqtt_django_backend'
 
@@ -17,18 +18,26 @@ def on_message(client, userdata, msg):
     topic = msg.topic
     qos = msg.qos
     retain = msg.retain
-
+    print("Topic: ", topic)
     print("Payload: ", payload)
 
     data = json.loads(payload)
+    
+    # handle different topics and classrooms
+    if "change" in data:
+        from api.models import MeasurementStation, EntranceEvent
+        s = MeasurementStation.objects.get(name='x raspberry')
+        m = EntranceEvent(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']), time=timezone.now(), change=data['change'])
 
-    from api.models import MeasurementStation, Measurement
-    s = MeasurementStation.objects.get(name='x raspberry')
-    m = Measurement(fk_measurement_station=s, measurement_time=timezone.now(), time=timezone.now(), co2=data['co2'],
-                    temperature=data['temperature'], humidity=data['humidity'], motion=data['motion'],
-                    light=data['light'])
+        m.save()
+    else:
+        from api.models import MeasurementStation, Measurement
+        s = MeasurementStation.objects.get(name='x raspberry')
+        m = Measurement(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']), time=timezone.now(), co2=data['co2'],
+                        temperature=data['temperature'], humidity=data['humidity'], motion=data['motion'],
+                        light=data['light'])
 
-    m.save()
+        m.save()
 
 
 client = mqtt.Client(client_id)
