@@ -5,3 +5,4 @@ django-timescaledb==0.2.11
 psycopg2==2.9.3
 channels==3.0.4
 paho-mqtt==1.6.1
+djangorestframework-simplejwt==5.1.0
