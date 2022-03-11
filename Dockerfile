@@ -1,7 +1,7 @@
 FROM python:3.9
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV DJANGO_DEBUG=False
+ENV DJANGO_DEBUG=True
 ENV secret_key=oursecretvalue
 WORKDIR /app
 COPY requirements.txt /app
