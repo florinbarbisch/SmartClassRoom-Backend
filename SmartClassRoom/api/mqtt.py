@@ -22,18 +22,20 @@ def on_message(client, userdata, msg):
     print("Payload: ", payload)
 
     data = json.loads(payload)
-    
+
     # handle different topics and classrooms
     if "change" in data:
         from api.models import MeasurementStation, EntranceEvent
         s = MeasurementStation.objects.get(name='x raspberry')
-        m = EntranceEvent(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']), time=timezone.now(), change=data['change'])
+        m = EntranceEvent(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']),
+                          time=timezone.now(), change=data['change'])
 
         m.save()
     else:
         from api.models import MeasurementStation, Measurement
         s = MeasurementStation.objects.get(name='x raspberry')
-        m = Measurement(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']), time=timezone.now(), co2=data['co2'],
+        m = Measurement(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']),
+                        time=timezone.now(), co2=data['co2'],
                         temperature=data['temperature'], humidity=data['humidity'], motion=data['motion'],
                         light=data['light'])
 

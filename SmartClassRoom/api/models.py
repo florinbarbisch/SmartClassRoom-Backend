@@ -33,11 +33,11 @@ class MeasurementStation(models.Model):
 class Measurement(TimescaleModel):
     fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
     measurement_time = TimescaleDateTimeField(interval="1 millisecond")
-    co2 = models.DecimalField(max_digits=19, decimal_places=10)
-    temperature = models.DecimalField(max_digits=19, decimal_places=10)
-    humidity = models.DecimalField(max_digits=19, decimal_places=10)
-    motion = models.BooleanField(default=False)
-    light = models.DecimalField(max_digits=19, decimal_places=10)
+    co2 = models.DecimalField(max_digits=19, decimal_places=10, null=True)
+    temperature = models.DecimalField(max_digits=19, decimal_places=10, null=True)
+    humidity = models.DecimalField(max_digits=19, decimal_places=10, null=True)
+    motion = models.BooleanField(default=False, null=True)
+    light = models.DecimalField(max_digits=19, decimal_places=10, null=True)
 
     class Meta:
         ordering = ["-measurement_time"]
