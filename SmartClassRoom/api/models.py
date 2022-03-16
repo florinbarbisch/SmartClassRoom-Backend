@@ -21,7 +21,6 @@ class MeasurementStation(models.Model):
     fk_classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     active = models.BooleanField(default=False)
-    ip_address = models.GenericIPAddressField()
 
     class Meta:
         ordering = ["-name"]
@@ -50,6 +49,22 @@ class EntranceEvent(TimescaleModel):
     fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
     change = models.IntegerField()
     measurement_time = TimescaleDateTimeField(interval="1 millisecond")
+
+    class Meta:
+        ordering = ["-measurement_time"]
+
+        def __str__(self):
+            return self.measurement_time
+
+
+class ConnectionHistory(TimescaleModel):
+    fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
+    measurement_time = TimescaleDateTimeField(interval="1 millisecond")
+    ip_address = models.GenericIPAddressField()
+    bluetooth_connected = models.BooleanField(default=False, null=True)
+    wlan_signal_strength = models.IntegerField()
+    ping_backend = models.IntegerField()
+    ping_broker = models.IntegerField()
 
     class Meta:
         ordering = ["-measurement_time"]
