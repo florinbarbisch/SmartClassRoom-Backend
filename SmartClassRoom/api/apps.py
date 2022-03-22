@@ -8,4 +8,4 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         print('API ready - Initializing MQTT')
-        mqtt.client.loop_start()
+        # mqtt.client.loop_start()
