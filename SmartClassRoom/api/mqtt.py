@@ -49,7 +49,7 @@ def on_message(client, userdata, msg):
     try:
         if measurement_type == 'measurement':
             handle_measurement(data, room_name, measurement_station_id)
-        elif measurement_type == 'entrance_event':
+        elif measurement_type == 'entranceevent':
             handle_entrance_event(data, room_name, measurement_station_id)
         elif measurement_type == 'connectionhistory':
             handle_connection_history(data, room_name, measurement_station_id)
