@@ -86,8 +86,10 @@ def handle_connection_history(data, room_name, measurement_station_id):
 
     m = ConnectionHistory(fk_measurement_station=s, insert_time=timezone.now(),
                           time=dateparse.parse_datetime(data['time']), ip_address=data['local-ip'],
-                          bluetooth_connected=data['feather-connected'], wlan_signal_strength=data['wlan-strength'],
-                          ping_backend=['ping-django'], ping_broker=['ping-flespi'], ping_grafana=['ping-grafana'])
+                          bluetooth_connected=data['feather-connected'],
+                          wlan_signal_strength=int(float(data['wlan-strength'])),
+                          ping_backend=int(float(data['ping-django'])), ping_broker=int(float(data['ping-flespi'])),
+                          ping_grafana=int(float(data['ping-grafana'])))
 
     m.save()
 
