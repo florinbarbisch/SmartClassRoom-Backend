@@ -12,7 +12,7 @@ def random_string(length):  # define the function and pass the length as argumen
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    topics = ["fhnw/+/+/measurement", "fhnw/+/+/entrance_event", "fhnw/+/+/connectionhistory"]
+    topics = ["fhnw/+/+/measurement", "fhnw/+/+/entranceevent", "fhnw/+/+/connectionhistory"]
 
     if rc == 0:
         for topic in topics:
