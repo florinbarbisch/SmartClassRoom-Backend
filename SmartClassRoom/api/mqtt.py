@@ -11,7 +11,8 @@ def random_string(length):  # define the function and pass the length as argumen
 
 
 def on_connect(client, userdata, flags, rc):
-    topics = ["fhnw/+/+/measurement", "fhnw/+/+/entrance_event"]
+    print("Connected with result code " + str(rc))
+    topics = ["fhnw/+/+/measurement", "fhnw/+/+/entrance_event", "fhnw/+/+/connectionhistory"]
 
     if rc == 0:
         for topic in topics:
@@ -19,6 +20,17 @@ def on_connect(client, userdata, flags, rc):
             print("Subscribed to topic: ", topic)
     else:
         print("Bad connection - Returned code=", rc)
+
+
+def on_disconnect(client, userdata, rc):
+    print("On disconnect called with result code " + str(rc))
+
+    print("Calling connect again...")
+    client.connect("mqtt.flespi.io", 1883, 1)
+
+
+def on_reconnect(client, userdata, rc):
+    print("On reconnect called with result code " + str(rc))
 
 
 def on_message(client, userdata, msg):
@@ -39,25 +51,18 @@ def on_message(client, userdata, msg):
             handle_measurement(data, room_name, measurement_station_id)
         elif measurement_type == 'entrance_event':
             handle_entrance_event(data, room_name, measurement_station_id)
+        elif measurement_type == 'connectionhistory':
+            handle_connection_history(data, room_name, measurement_station_id)
     except Exception as e:
         print(e)
-
-
-def on_disconnect(client, userdata, rc):
-    client.disconnect()
-    print("Disconnected")
-
-
-def on_reconnect(client, userdata, rc):
-    print("Reconnect called")
 
 
 def handle_entrance_event(data, room_name, measurement_station_id):
     from api.models import Classroom, MeasurementStation, EntranceEvent
     c = Classroom.objects.get(name=room_name)
     s = MeasurementStation.objects.get(id=measurement_station_id, fk_classroom=c.id)
-    m = EntranceEvent(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']),
-                      time=timezone.now(), change=data['change'])
+    m = EntranceEvent(fk_measurement_station=s, insert_time=timezone.now(),
+                      time=dateparse.parse_datetime(data['time']), change=data['change'])
 
     m.save()
 
@@ -66,10 +71,25 @@ def handle_measurement(data, room_name, measurement_station_id):
     from api.models import Classroom, MeasurementStation, Measurement
     c = Classroom.objects.get(name=room_name)
     s = MeasurementStation.objects.get(id=measurement_station_id, fk_classroom=c.id)
-    m = Measurement(fk_measurement_station=s, measurement_time=dateparse.parse_datetime(data['time']),
-                    time=timezone.now(), co2=data['co2'],
+    m = Measurement(fk_measurement_station=s, insert_time=timezone.now(),
+                    time=dateparse.parse_datetime(data['time']), co2=data['co2'],
                     temperature=data['temperature'], humidity=data['humidity'], motion=data['motion'],
                     light=data['light'])
+
+    m.save()
+
+
+def handle_connection_history(data, room_name, measurement_station_id):
+    from api.models import Classroom, MeasurementStation, ConnectionHistory
+    c = Classroom.objects.get(name=room_name)
+    s = MeasurementStation.objects.get(id=measurement_station_id, fk_classroom=c.id)
+
+    m = ConnectionHistory(fk_measurement_station=s, insert_time=timezone.now(),
+                          time=dateparse.parse_datetime(data['time']), ip_address=data['local-ip'],
+                          bluetooth_connected=data['feather-connected'],
+                          wlan_signal_strength=int(float(data['wlan-strength'])),
+                          ping_backend=int(float(data['ping-django'])), ping_broker=int(float(data['ping-flespi'])),
+                          ping_grafana=int(float(data['ping-grafana'])))
 
     m.save()
 

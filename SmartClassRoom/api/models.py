@@ -31,7 +31,7 @@ class MeasurementStation(models.Model):
 
 class Measurement(TimescaleModel):
     fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
-    measurement_time = TimescaleDateTimeField(interval="1 millisecond")
+    insert_time = TimescaleDateTimeField(interval="1 millisecond")
     co2 = models.DecimalField(max_digits=19, decimal_places=10, null=True)
     temperature = models.DecimalField(max_digits=19, decimal_places=10, null=True)
     humidity = models.DecimalField(max_digits=19, decimal_places=10, null=True)
@@ -39,35 +39,36 @@ class Measurement(TimescaleModel):
     light = models.DecimalField(max_digits=19, decimal_places=10, null=True)
 
     class Meta:
-        ordering = ["-measurement_time"]
+        ordering = ["-insert_time"]
 
         def __str__(self):
-            return self.measurement_time
+            return self.insert_time
 
 
 class EntranceEvent(TimescaleModel):
     fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
     change = models.IntegerField()
-    measurement_time = TimescaleDateTimeField(interval="1 millisecond")
+    insert_time = TimescaleDateTimeField(interval="1 millisecond")
 
     class Meta:
-        ordering = ["-measurement_time"]
+        ordering = ["-insert_time"]
 
         def __str__(self):
-            return self.measurement_time
+            return self.insert_time
 
 
 class ConnectionHistory(TimescaleModel):
     fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
-    measurement_time = TimescaleDateTimeField(interval="1 millisecond")
+    insert_time = TimescaleDateTimeField(interval="1 millisecond")
     ip_address = models.GenericIPAddressField()
     bluetooth_connected = models.BooleanField(default=False, null=True)
     wlan_signal_strength = models.IntegerField()
     ping_backend = models.IntegerField()
     ping_broker = models.IntegerField()
+    ping_grafana = models.IntegerField()
 
     class Meta:
-        ordering = ["-measurement_time"]
+        ordering = ["-insert_time"]
 
         def __str__(self):
-            return self.measurement_time
+            return self.insert_time
