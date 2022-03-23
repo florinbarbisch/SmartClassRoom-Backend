@@ -2,7 +2,17 @@ import paho.mqtt.client as mqtt
 import json
 import random
 import string
+import logging
 from django.utils import timezone, dateparse
+
+logging.basicConfig(format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG,
+                    handlers=[
+                        logging.FileHandler("mqtt.log", mode="a"),
+                        logging.StreamHandler()
+                    ])
+logger = logging.getLogger(__name__)
 
 
 def random_string(length):  # define the function and pass the length as argument
@@ -11,26 +21,31 @@ def random_string(length):  # define the function and pass the length as argumen
 
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
+    logger.info("Connected with result code " + str(rc))
+
     topics = ["fhnw/+/+/measurement", "fhnw/+/+/entranceevent", "fhnw/+/+/connectionhistory"]
 
     if rc == 0:
         for topic in topics:
             client.subscribe(topic)
-            print("Subscribed to topic: ", topic)
+            logger.info("Subscribed to topic: " + topic)
     else:
-        print("Bad connection - Returned code=", rc)
+        logger.error("Bad connection - Returned code=" + str(rc))
+
+
+def on_connect_fail(client, userdata, rc):
+    logger.error("Connect failed with result code " + str(rc))
 
 
 def on_disconnect(client, userdata, rc):
-    print("On disconnect called with result code " + str(rc))
+    logger.warning("On disconnect called with result code " + str(rc))
 
-    print("Calling connect again...")
+    logger.info("Calling connect again...")
     client.connect("mqtt.flespi.io", 1883, 1)
 
 
 def on_reconnect(client, userdata, rc):
-    print("On reconnect called with result code " + str(rc))
+    logger.info("On reconnect called with result code " + str(rc))
 
 
 def on_message(client, userdata, msg):
@@ -38,8 +53,7 @@ def on_message(client, userdata, msg):
     topic = msg.topic
     qos = msg.qos
     retain = msg.retain
-    print("Topic: ", topic)
-    print("Payload: ", payload)
+    print("Topic: ", topic, "/ ", "Payload: ", payload.strip())
 
     data = json.loads(payload)
 
@@ -54,7 +68,7 @@ def on_message(client, userdata, msg):
         elif measurement_type == 'connectionhistory':
             handle_connection_history(data, room_name, measurement_station_id)
     except Exception as e:
-        print(e)
+        logger.error(e)
 
 
 def handle_entrance_event(data, room_name, measurement_station_id):
@@ -95,12 +109,13 @@ def handle_connection_history(data, room_name, measurement_station_id):
 
 
 client_id = f'mqtt_django_backend_{random_string(5)}'
-print('Generated client_id: ', client_id)
+logger.info('Generated client_id: ' + client_id)
 
 client = mqtt.Client(client_id)
 client.username_pw_set('8e0v0tanDPfBzeKkuasrarRQUKwN0WQW0EiPXg2oV6NiaossmIKmXp2HYnlO9ZAZ', '')
 client.on_message = on_message
 client.on_connect = on_connect
 client.on_reconnect = on_reconnect
+client.on_connect_fail = on_connect_fail
 client.on_disconnect = on_disconnect
 client.connect("mqtt.flespi.io", 1883, 1)
