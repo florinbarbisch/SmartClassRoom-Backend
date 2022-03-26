@@ -27,8 +27,10 @@ class ClassroomViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows classrooms to be viewed or edited.
     """
+    http_method_names = ['get', 'post', 'patch', 'delete']
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
+    
 
 
 class MeasurementStationViewSet(viewsets.ModelViewSet):
