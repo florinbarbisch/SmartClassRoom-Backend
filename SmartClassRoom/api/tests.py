@@ -46,7 +46,7 @@ class Classroom_Create(TestCase):
         Classroom.objects.create(name="Classroom 2", description="Description 2", room_number="2")
         Classroom.objects.create(name="Classroom 3", description="Description 3", room_number="3")
 
-    def test_animals_can_speak(self):
+    def test_classrooms(self):
         """Animals that can speak are correctly identified"""
         one = Classroom.objects.get(room_number="1")
         two = Classroom.objects.get(room_number="2")
