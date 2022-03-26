@@ -22,7 +22,7 @@ def random_string(length):  # define the function and pass the length as argumen
 
 def on_connect(client, userdata, flags, rc):
     logger.info("Connected with result code " + str(rc))
-
+    
     topics = ["fhnw/+/+/measurement", "fhnw/+/+/entranceevent", "fhnw/+/+/connectionhistory"]
 
     if rc == 0:

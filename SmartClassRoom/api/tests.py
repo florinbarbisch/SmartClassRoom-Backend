@@ -1,8 +1,9 @@
 from msilib.schema import Class
 from django.test import TestCase
 
-# Create your tests here.
+
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
+
 class Classroom_Create(TestCase):
     def setUp(self):
         Classroom.objects.create(name="Classroom 1", description="Description 1", room_number="1")
