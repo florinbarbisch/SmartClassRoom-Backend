@@ -25,7 +25,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class ClassroomViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows classrooms to be viewed or edited.
     """
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
@@ -33,7 +33,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 
 class MeasurementStationViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows measurement stations to be viewed or edited.
     """
     queryset = MeasurementStation.objects.all()
     serializer_class = MeasurementStationSerializer
@@ -42,7 +42,7 @@ class MeasurementStationViewSet(viewsets.ModelViewSet):
 
 class MeasurementsSerializer(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows measurements to be viewed or edited.
     """
     queryset = Measurement.objects.all()
     serializer_class = MeasurementsSerializer
