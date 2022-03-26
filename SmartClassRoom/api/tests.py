@@ -1,8 +1,43 @@
 from msilib.schema import Class
 from django.test import TestCase
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from sympy import E
 
 
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
+
+class Selinum_Test_Cases(TestCase):
+    def setUp(self):
+        try:
+            self.driver = webdriver.Chrome('C:\\tools\selenium\chromedriver.exe')
+        except:
+            print("Error: Chrome driver not found")
+        
+        try:
+            self.driver = webdriver.Firefox()
+        except:
+            print("Error: Chrome driver not found")
+        
+        try:
+            self.driver = webdriver.Safari()
+        except:
+            print("Error: Safari driver not found")
+        
+        if self.driver is None:
+            raise Exception("Error: No driver found")
+
+    def test_selenium(self):
+        self.driver.get("https://www.python.org")
+        print(self.driver.title)
+        search_bar = self.driver.find_element_by_name("q")
+        search_bar.clear()
+        search_bar.send_keys("getting started with python")
+        search_bar.send_keys(Keys.RETURN)
+        print(self.driver.current_url)
+        self.driver.close()
+
+
 
 class Classroom_Create(TestCase):
     def setUp(self):

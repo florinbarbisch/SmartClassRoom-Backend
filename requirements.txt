@@ -6,3 +6,4 @@ psycopg2==2.9.3
 channels==3.0.4
 paho-mqtt==1.6.1
 djangorestframework-simplejwt==5.1.0
+selenium==4.1.3
