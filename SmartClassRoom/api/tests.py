@@ -3,7 +3,7 @@ from django.test import TestCase
 
 # Create your tests here.
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
-class AnimalTestCase(TestCase):
+class Classroom_Create(TestCase):
     def setUp(self):
         Classroom.objects.create(name="Classroom 1", description="Description 1", room_number="1")
         Classroom.objects.create(name="Classroom 2", description="Description 2", room_number="2")
