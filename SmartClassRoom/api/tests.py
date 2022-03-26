@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
 
 class Selinum_Test_Cases(TestCase):
+    #Well i hate python for Web Testing :) Cypress is the best
     def setUp(self):
         try:
             self.driver = webdriver.Chrome('C:\\tools\selenium\chromedriver.exe')
