@@ -14,6 +14,6 @@ class Classroom_Create(TestCase):
         one = Classroom.objects.get(room_number="1")
         two = Classroom.objects.get(room_number="2")
         three = Classroom.objects.get(room_number="3")
-        self.assertEqual(one.name(), 'Classroom 1')
+        self.assertEqual(one.name, 'Classroom 1')
         self.assertEqual(two.name, 'Classroom 2')
-        self.assertEqual(three.speak(), 'Classroom 1')
+        self.assertEqual(three.name, 'Classroom 3')

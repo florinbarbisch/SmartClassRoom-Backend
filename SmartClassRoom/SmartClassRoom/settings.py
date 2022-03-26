@@ -110,6 +110,9 @@ else:
             'PASSWORD': 'Welcome12',
             'HOST': 'timescale.roulet.dev',
             'PORT': '5432',
+            'TEST': {
+            'NAME': 'smartclassroom_test_unittest',
+        },
         }
     }
 
