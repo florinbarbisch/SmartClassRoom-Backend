@@ -34,6 +34,7 @@ class Selinum_Test_Cases(TestCase):
         search_bar.send_keys("getting started with python")
         search_bar.send_keys(Keys.RETURN)
         print(self.driver.current_url)
+        self.assertEqual(self.driver.current_url, "https://www.python.org/search/?q=getting+started+with+python&submit=")
         self.driver.close()
 
 
