@@ -1,12 +1,12 @@
 from msilib.schema import Class
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
 
-class Selinum_Test_Cases(TestCase):
+class Selinum_Test_Cases(LiveServerTestCase):
     #Well python is not suited for Web Testing but whatever :) Cypress
     def setUp(self):
         try:
@@ -28,15 +28,12 @@ class Selinum_Test_Cases(TestCase):
             raise Exception("Error: No driver found")
 
     def test_selenium(self):
-        self.driver.get("https://www.python.org")
-        print(self.driver.title)
-        search_bar = self.driver.find_element_by_name("q")
-        search_bar.clear()
-        search_bar.send_keys("getting started with python")
-        search_bar.send_keys(Keys.RETURN)
+        self.driver.get(self.live_server_url+'/api/')
         print(self.driver.current_url)
-        self.assertEqual(self.driver.current_url, "https://www.python.org/search/?q=getting+started+with+python&submit=")
-        self.driver.close()
+        
+        
+    def tearDown(self):
+        pass
 
 
 
