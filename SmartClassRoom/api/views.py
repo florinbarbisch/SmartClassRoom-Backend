@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
-from .models import Classroom, MeasurementStation, Measurement
+from .models import Classroom, ConnectionHistory, MeasurementStation, Measurement
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer
+from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer, ConnectionHistorySerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -40,10 +40,18 @@ class MeasurementStationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class MeasurementsSerializer(viewsets.ModelViewSet):
+class MeasurementsViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows measurements to be viewed or edited.
     """
     queryset = Measurement.objects.all()
     serializer_class = MeasurementsSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ConnectionHistoryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows connection history to be viewed or edited.
+    """
+    queryset = ConnectionHistory.objects.all()
+    serializer_class = ConnectionHistorySerializer
