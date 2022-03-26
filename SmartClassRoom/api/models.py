@@ -10,11 +10,10 @@ class Classroom(models.Model):
     room_number = models.CharField(max_length=100)
     updated_on = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
     class Meta:
         ordering = ["-name"]
-
-        def __str__(self):
-            return self.name
 
 
 class MeasurementStation(models.Model):
@@ -22,11 +21,10 @@ class MeasurementStation(models.Model):
     name = models.CharField(max_length=50)
     active = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
     class Meta:
         ordering = ["-name"]
-
-        def __str__(self):
-            return self.name
 
 
 class Measurement(TimescaleModel):
@@ -38,11 +36,10 @@ class Measurement(TimescaleModel):
     motion = models.BooleanField(default=False, null=True)
     light = models.DecimalField(max_digits=19, decimal_places=10, null=True)
 
+    def __str__(self):
+        return self.insert_time
     class Meta:
         ordering = ["-insert_time"]
-
-        def __str__(self):
-            return self.insert_time
 
 
 class EntranceEvent(TimescaleModel):
@@ -50,11 +47,13 @@ class EntranceEvent(TimescaleModel):
     change = models.IntegerField()
     insert_time = TimescaleDateTimeField(interval="7 days")
 
+    def __str__(self):
+        return self.insert_time
+
     class Meta:
         ordering = ["-insert_time"]
 
-        def __str__(self):
-            return self.insert_time
+
 
 
 class ConnectionHistory(TimescaleModel):
@@ -67,8 +66,9 @@ class ConnectionHistory(TimescaleModel):
     ping_broker = models.IntegerField()
     ping_grafana = models.IntegerField()
 
+    def __str__(self):
+        return self.insert_time
+
+    
     class Meta:
         ordering = ["-insert_time"]
-
-        def __str__(self):
-            return self.insert_time
