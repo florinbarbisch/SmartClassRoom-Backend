@@ -68,7 +68,7 @@ def on_message(client, userdata, msg):
         elif measurement_type == 'connectionhistory':
             handle_connection_history(data, room_name, measurement_station_id)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
 
 
 def handle_entrance_event(data, room_name, measurement_station_id):
