@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
 from django.contrib.auth.models import User
 
+# No tests for Users and Groups, since we didn't create them. (django.contrib.auth.models created them)
 
 class SmartclassroomTestCase(TestCase):
     def setUp(self):
