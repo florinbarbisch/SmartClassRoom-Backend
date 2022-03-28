@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -30,6 +31,11 @@ class SmartclassroomTestCase(TestCase):
         MeasurementStation.objects.create(fk_classroom=Classroom.objects.get(name="Classroom 2"),
                                           name="Measurement Station 3", active=True)
 
+        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
+        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:01:00+01:00", insert_time="2020-01-01T00:01:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-29, ping_backend=12, ping_broker=15, ping_grafana=12)
+        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:02:00+01:00", insert_time="2020-01-01T00:02:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-63, ping_backend=12, ping_broker=15, ping_grafana=12)
+        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 2"), time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.2", bluetooth_connected=False, wlan_signal_strength=-84, ping_backend=12, ping_broker=17, ping_grafana=14)
+
 
 class Classroom_Get(SmartclassroomTestCase):
     """
@@ -38,7 +44,6 @@ class Classroom_Get(SmartclassroomTestCase):
 
     def test_get_all_classrooms(self):
         response = self.client.get('/api/Classrooms/', format='json')
-
         self.assertEqual(len(response.data['results']), 3)
         self.assertEqual(response.data['results'][0]['name'], 'Classroom 3')
         self.assertEqual(response.data['results'][0]['description'], 'Description 3')
@@ -93,6 +98,86 @@ class Classroom_Put(SmartclassroomTestCase):
         self.assertEqual(classroom_1a.name, 'Classroom 1a')
         self.assertEqual(classroom_1a.description, 'Description 1a')
         self.assertEqual(classroom_1a.room_number, '1a')
+
+
+class ConnectionHistory_Get(SmartclassroomTestCase):
+    """
+    Tests GET-Endpoint for ConnectionHistory
+    """
+    def test_get_all_connection_history(self):
+        response = self.client.get('/api/ConnectionHistory/', format='json')
+        self.assertEqual(len(response.data['results']), 4)
+        self.assertEqual(response.data['results'][0]['time'], '2020-01-01T00:02:00+01:00')
+        self.assertEqual(response.data['results'][0]['insert_time'], '2020-01-01T00:02:00+01:00')
+        self.assertEqual(response.data['results'][0]['ip_address'], '192.168.1.1')
+        self.assertEqual(response.data['results'][0]['bluetooth_connected'], True)
+        self.assertEqual(response.data['results'][0]['wlan_signal_strength'], -63)
+        self.assertEqual(response.data['results'][0]['ping_backend'], 12)
+        self.assertEqual(response.data['results'][0]['ping_broker'], 15)
+        self.assertEqual(response.data['results'][0]['ping_grafana'], 12)
+
+
+    def test_get_one_connection_history(self):
+        connection_history_1 = ConnectionHistory.objects.get(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 2"))
+        response = self.client.get(f'/api/ConnectionHistory/{connection_history_1.id}/', format='json')
+        self.assertEqual(response.data['time'], '2020-01-01T00:00:00+01:00')
+        self.assertEqual(response.data['insert_time'], '2020-01-01T00:00:00+01:00')
+        self.assertEqual(response.data['ip_address'], '192.168.1.2')
+        self.assertEqual(response.data['bluetooth_connected'], False)
+        self.assertEqual(response.data['wlan_signal_strength'], -84)
+        self.assertEqual(response.data['ping_backend'], 12)
+        self.assertEqual(response.data['ping_broker'], 17)
+        self.assertEqual(response.data['ping_grafana'], 14)
+
+
+class ConnectionHistory_Post(SmartclassroomTestCase):
+    """
+    Tests POST-Endpoint for ConnectionHistory
+    """
+    def test_post_connection_history(self):
+        measurement_station = MeasurementStation.objects.get(name="Measurement Station 3")
+        self.client.post('/api/ConnectionHistory/', {'fk_measurement_station': measurement_station.id, 'time': '2020-01-01T00:00:00+01:00', 'insert_time': '2020-01-01T00:00:00+01:00', 'ip_address': '192.168.1.22', 'bluetooth_connected': True, 'wlan_signal_strength': -63, 'ping_backend': 12, 'ping_broker': 15, 'ping_grafana': 12}, format='json')
+        connection_history = ConnectionHistory.objects.get(fk_measurement_station=measurement_station.id)
+        self.assertIsNotNone(connection_history)
+        self.assertEqual(connection_history.time, datetime.strptime('2020-01-01T00:00:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(connection_history.insert_time, datetime.strptime('2020-01-01T00:00:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(connection_history.ip_address, '192.168.1.22')
+        self.assertEqual(connection_history.bluetooth_connected, True)
+        self.assertEqual(connection_history.wlan_signal_strength, -63)
+        self.assertEqual(connection_history.ping_backend, 12)
+        self.assertEqual(connection_history.ping_broker, 15)
+        self.assertEqual(connection_history.ping_grafana, 12)
+
+
+class ConnectionHistory_Delete(SmartclassroomTestCase):
+    """
+    Tests DELETE-Endpoint for ConnectionHistory
+    """
+    def test_delete_connection_history(self):
+        measurement_station = MeasurementStation.objects.get(name="Measurement Station 2")
+        connection_history = ConnectionHistory.objects.get(fk_measurement_station=measurement_station.id)
+        self.client.delete(f'/api/ConnectionHistory/{connection_history.id}/', format='json')
+        self.assertEqual(ConnectionHistory.objects.count(), 3)
+        self.assertEqual(ConnectionHistory.objects.filter(fk_measurement_station=measurement_station.id).count(), 0)
+
+
+class ConnectionHistory_Put(SmartclassroomTestCase):
+    """
+    Tests PUT-Endpoint for ConnectionHistory
+    """
+    def test_put_connection_history(self):
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        connection_history_1 = ConnectionHistory.objects.get(fk_measurement_station=measurement_station_2.id)
+        self.client.put(f'/api/ConnectionHistory/{connection_history_1.id}/', {'fk_measurement_station': measurement_station_2.id, 'time': '2020-01-01T00:00:00+01:00', 'insert_time': '2020-01-01T00:00:00+01:00', 'ip_address': '192.168.1.12', 'bluetooth_connected': False, 'wlan_signal_strength': -43, 'ping_backend': 11, 'ping_broker': 12, 'ping_grafana': 11}, format='json')
+        connection_history = ConnectionHistory.objects.get(fk_measurement_station=measurement_station_2.id)
+        self.assertEqual(connection_history.time, datetime.strptime('2020-01-01T00:00:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(connection_history.insert_time, datetime.strptime('2020-01-01T00:00:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(connection_history.ip_address, '192.168.1.12')
+        self.assertEqual(connection_history.bluetooth_connected, False)
+        self.assertEqual(connection_history.wlan_signal_strength, -43)
+        self.assertEqual(connection_history.ping_backend, 11)
+        self.assertEqual(connection_history.ping_broker, 12)
+        self.assertEqual(connection_history.ping_grafana, 11)
 
 
 # CRUD Tests for MeasurementStation
