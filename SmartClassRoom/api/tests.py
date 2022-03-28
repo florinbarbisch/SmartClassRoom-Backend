@@ -1,41 +1,7 @@
-from msilib.schema import Class
-from django.test import TestCase, LiveServerTestCase
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-
+from django.test import TestCase
+from rest_framework.test import APIClient
 
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
-
-class Selinum_Test_Cases(LiveServerTestCase):
-    #Well python is not suited for Web Testing but whatever :) Cypress
-    def setUp(self):
-        try:
-            self.driver = webdriver.Chrome('C:\\tools\selenium\chromedriver.exe')
-        except:
-            print("Error: Chrome driver not found")
-        
-        try:
-            self.driver = webdriver.Firefox()
-        except:
-            print("Error: Chrome driver not found")
-        
-        try:
-            self.driver = webdriver.Safari()
-        except:
-            print("Error: Safari driver not found")
-        
-        if self.driver is None:
-            raise Exception("Error: No driver found")
-
-    def test_selenium(self):
-        self.driver.get(self.live_server_url+'/api/')
-        print(self.driver.current_url)
-        
-        
-    def tearDown(self):
-        pass
-
-
 
 class Classroom_Create(TestCase):
     def setUp(self):
@@ -44,10 +10,9 @@ class Classroom_Create(TestCase):
         Classroom.objects.create(name="Classroom 3", description="Description 3", room_number="3")
 
     def test_classrooms(self):
-        """Animals that can speak are correctly identified"""
-        one = Classroom.objects.get(room_number="1")
-        two = Classroom.objects.get(room_number="2")
-        three = Classroom.objects.get(room_number="3")
-        self.assertEqual(one.name, 'Classroom 1')
-        self.assertEqual(two.name, 'Classroom 2')
-        self.assertEqual(three.name, 'Classroom 3')
+        client = APIClient()
+        response = client.get('/api/Classrooms/', format='json')
+        self.assertEqual(len(response.data['results']), 3)
+        self.assertEqual(response.data['results'][0]['name'], 'Classroom 3')
+        self.assertEqual(response.data['results'][0]['description'], 'Description 3')
+        self.assertEqual(response.data['results'][0]['room_number'], '3')
