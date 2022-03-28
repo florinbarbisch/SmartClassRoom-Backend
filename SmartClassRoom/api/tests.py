@@ -2,7 +2,7 @@ from datetime import datetime
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory
+from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory, EntranceEvent
 from django.contrib.auth.models import User
 
 
@@ -30,11 +30,19 @@ class SmartclassroomTestCase(TestCase):
                                           name="Measurement Station 2", active=True)
         MeasurementStation.objects.create(fk_classroom=Classroom.objects.get(name="Classroom 2"),
                                           name="Measurement Station 3", active=True)
+                                          
+        measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 1")
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
 
-        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
-        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:01:00+01:00", insert_time="2020-01-01T00:01:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-29, ping_backend=12, ping_broker=15, ping_grafana=12)
-        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 1"), time="2020-01-01T00:02:00+01:00", insert_time="2020-01-01T00:02:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-63, ping_backend=12, ping_broker=15, ping_grafana=12)
-        ConnectionHistory.objects.create(fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 2"), time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.2", bluetooth_connected=False, wlan_signal_strength=-84, ping_backend=12, ping_broker=17, ping_grafana=14)
+        EntranceEvent.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", change=1)
+        EntranceEvent.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:01:00+01:00", insert_time="2020-01-01T00:01:00+01:00", change=-1)
+        EntranceEvent.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:02:00+01:00", insert_time="2020-01-01T00:02:00+01:00", change=1)
+        EntranceEvent.objects.create(fk_measurement_station=measurement_station_2, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", change=-1)
+
+        ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
+        ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:01:00+01:00", insert_time="2020-01-01T00:01:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-29, ping_backend=12, ping_broker=15, ping_grafana=12)
+        ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:02:00+01:00", insert_time="2020-01-01T00:02:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-63, ping_backend=12, ping_broker=15, ping_grafana=12)
+        ConnectionHistory.objects.create(fk_measurement_station=measurement_station_2, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.2", bluetooth_connected=False, wlan_signal_strength=-84, ping_backend=12, ping_broker=17, ping_grafana=14)
 
 
 class Classroom_Get(SmartclassroomTestCase):
@@ -100,6 +108,7 @@ class Classroom_Put(SmartclassroomTestCase):
         self.assertEqual(classroom_1a.room_number, '1a')
 
 
+# CRUD Tests for ConnectionHistory
 class ConnectionHistory_Get(SmartclassroomTestCase):
     """
     Tests GET-Endpoint for ConnectionHistory
@@ -241,3 +250,71 @@ class MeasurementStation_Put(SmartclassroomTestCase):
         self.assertEqual(measurement_station_1a.name, 'Measurement Station 1a')
         self.assertEqual(measurement_station_1a.active, False)
         self.assertEqual(measurement_station_1a.fk_classroom.name, 'Classroom 2')
+
+
+# CRUD Tests for EntranceEvent
+class EntranceEvent_Get(SmartclassroomTestCase):
+    """
+    Tests GET-Endpoint for EntranceEvents
+    """
+    def test_get_all_entrance_events(self):
+        response = self.client.get('/api/EntranceEvents/', format='json')
+        measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 1")
+        self.assertEqual(response.data['count'], 4)
+        self.assertEqual(response.data['results'][0]['time'], '2020-01-01T00:02:00+01:00')
+        self.assertEqual(response.data['results'][0]['insert_time'], '2020-01-01T00:02:00+01:00')
+        self.assertEqual(response.data['results'][0]['fk_measurement_station'], measurement_station_1.id)
+        self.assertEqual(response.data['results'][0]['change'], 1)
+
+    
+    def test_get_entrance_event_by_id(self):
+        measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 2")
+        entrance_event = EntranceEvent.objects.get(fk_measurement_station=measurement_station_1.id)
+        response = self.client.get(f'/api/EntranceEvents/{entrance_event.id}/', format='json')
+        self.assertEqual(response.data['time'], '2020-01-01T00:00:00+01:00')
+        self.assertEqual(response.data['insert_time'], '2020-01-01T00:00:00+01:00')
+        self.assertEqual(response.data['fk_measurement_station'], measurement_station_1.id)
+        self.assertEqual(response.data['change'], -1)
+
+
+class EntranceEvent_Post(SmartclassroomTestCase):
+    """
+    Tests POST-Endpoint for EntranceEvents
+    """
+    def test_post_entrance_event(self):
+        measurement_station_3 = MeasurementStation.objects.get(name="Measurement Station 3")
+        self.client.post('/api/EntranceEvents/', {'fk_measurement_station': measurement_station_3.id, 'time': '2020-01-01T00:03:00+01:00', 'insert_time': '2020-01-01T00:03:00+01:00', 'change': 1}, format='json')
+        self.assertEqual(EntranceEvent.objects.count(), 5)
+        self.assertEqual(EntranceEvent.objects.filter(fk_measurement_station=measurement_station_3.id).count(), 1)
+        entrance_event = EntranceEvent.objects.get(fk_measurement_station=measurement_station_3.id)
+        self.assertEqual(entrance_event.time, datetime.strptime('2020-01-01T00:03:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(entrance_event.insert_time, datetime.strptime('2020-01-01T00:03:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(entrance_event.change, 1)
+
+
+class EntranceEvent_Delete(SmartclassroomTestCase):
+    """
+    Tests DELETE-Endpoint for EntranceEvents
+    """
+    def test_delete_entrance_event(self):
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        entrance_event = EntranceEvent.objects.get(fk_measurement_station=measurement_station_2.id)
+        self.client.delete(f'/api/EntranceEvents/{entrance_event.id}/', format='json')
+        self.assertEqual(EntranceEvent.objects.count(), 3)
+        self.assertEqual(EntranceEvent.objects.filter(fk_measurement_station=measurement_station_2.id).count(), 0)
+
+
+class EntranceEvent_Put(SmartclassroomTestCase):
+    """
+    Tests PUT-Endpoint for EntranceEvents
+    """
+    def test_put_entrance_event(self):
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        entrance_event = EntranceEvent.objects.get(fk_measurement_station=measurement_station_2.id)
+        self.client.put(f'/api/EntranceEvents/{entrance_event.id}/', {'fk_measurement_station': measurement_station_2.id, 'time': '2020-01-01T00:01:00+01:00', 'insert_time': '2020-01-01T00:01:00+01:00', 'change': 3}, format='json')
+        self.assertEqual(EntranceEvent.objects.count(), 4)
+        self.assertEqual(EntranceEvent.objects.filter(fk_measurement_station=measurement_station_2.id).count(), 1)
+        entrance_event = EntranceEvent.objects.get(fk_measurement_station=measurement_station_2.id)
+        self.assertEqual(entrance_event.time, datetime.strptime('2020-01-01T00:01:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(entrance_event.insert_time, datetime.strptime('2020-01-01T00:01:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
+        self.assertEqual(entrance_event.change, 3)
