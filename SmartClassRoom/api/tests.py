@@ -22,6 +22,10 @@ class SmartclassroomTestCase(TestCase):
         Classroom.objects.create(name="Classroom 2", description="Description 2", room_number="2")
         Classroom.objects.create(name="Classroom 3", description="Description 3", room_number="3")
 
+        MeasurementStation.objects.create(fk_classroom=Classroom.objects.get(name="Classroom 1"), name="Measurement Station 1", active=True)
+        MeasurementStation.objects.create(fk_classroom=Classroom.objects.get(name="Classroom 1"), name="Measurement Station 2", active=True)
+        MeasurementStation.objects.create(fk_classroom=Classroom.objects.get(name="Classroom 2"), name="Measurement Station 3", active=True)
+
 
 class Classroom_Get(SmartclassroomTestCase):
     """
