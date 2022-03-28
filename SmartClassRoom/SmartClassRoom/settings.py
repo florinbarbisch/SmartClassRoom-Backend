@@ -111,7 +111,7 @@ else:
             'HOST': 'timescale.roulet.dev',
             'PORT': '5432',
             'TEST': {
-            'NAME': 'smartclassroom_test_unittest',
+                'NAME': 'smartclassroom_test_unittest',
         },
         }
     }
