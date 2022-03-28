@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
-from .models import Classroom, ConnectionHistory, MeasurementStation, Measurement
+from .models import Classroom, ConnectionHistory, MeasurementStation, Measurement, EntranceEvent
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer, ConnectionHistorySerializer
+from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer, ConnectionHistorySerializer, EntranceEventSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -56,4 +56,13 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     """
     queryset = ConnectionHistory.objects.all()
     serializer_class = ConnectionHistorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class EntranceEventViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows entrance events to be viewed or edited.
+    """
+    queryset = EntranceEvent.objects.all()
+    serializer_class = EntranceEventSerializer
     permission_classes = [permissions.IsAuthenticated]

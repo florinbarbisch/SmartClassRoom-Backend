@@ -30,6 +30,7 @@ router.register(r'MeasurementStations', views.MeasurementStationViewSet)
 router.register(r'Measurements', views.MeasurementsViewSet)
 router.register(r'Classrooms', views.ClassroomViewSet)
 router.register(r'ConnectionHistory', views.ConnectionHistoryViewSet)
+router.register(r'EntranceEvents', views.EntranceEventViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -49,11 +49,8 @@ class EntranceEvent(TimescaleModel):
 
     def __str__(self):
         return self.insert_time
-
     class Meta:
         ordering = ["-insert_time"]
-
-
 
 
 class ConnectionHistory(TimescaleModel):
@@ -68,7 +65,5 @@ class ConnectionHistory(TimescaleModel):
 
     def __str__(self):
         return self.insert_time
-
-    
     class Meta:
         ordering = ["-insert_time"]
