@@ -5,6 +5,10 @@ Rest Django Backend
 1. `cd SmartClassRoom`
 2. `python manage.py runserver`
 
+## Test REST API
+1. `cd SmartClassRoom`
+2. `python manage.py test`
+
 ## Django Admin Dashboard
 http://127.0.0.1:8000/admin/
 
