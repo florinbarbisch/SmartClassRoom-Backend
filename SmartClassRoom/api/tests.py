@@ -192,7 +192,7 @@ class MeasurementStation_Get(SmartclassroomTestCase):
         response = self.client.get(f'/api/MeasurementStations/{measurement_station_1.id}/', format='json')
         self.assertEqual(response.data['name'], 'Measurement Station 1')
         self.assertEqual(response.data['active'], True)
-        self.assertEqual(response.data['fk_classroom'], f'http://testserver/api/Classrooms/{classroom_1.id}/')
+        self.assertEqual(response.data['fk_classroom'], classroom_1.id)
 
 
 class MeasurementStation_Post(SmartclassroomTestCase):
@@ -204,7 +204,7 @@ class MeasurementStation_Post(SmartclassroomTestCase):
         classroom_1 = Classroom.objects.get(name='Classroom 1')
         self.client.post('/api/MeasurementStations/',
                          {'name': 'Measurement Station 4', 'active': True,
-                          'fk_classroom': f'http://testserver/api/Classrooms/{classroom_1.id}/'},
+                          'fk_classroom': classroom_1.id},
                          format='json')
         measurement_station_4 = MeasurementStation.objects.get(name='Measurement Station 4')
         self.assertIsNotNone(measurement_station_4)
@@ -235,7 +235,7 @@ class MeasurementStation_Put(SmartclassroomTestCase):
         measurement_station_1 = MeasurementStation.objects.get(name='Measurement Station 1')
         self.client.put(f'/api/MeasurementStations/{measurement_station_1.id}/',
                         {'name': 'Measurement Station 1a', 'active': False,
-                         'fk_classroom': f'http://testserver/api/Classrooms/{classroom_2.id}/'}, format='json')
+                         'fk_classroom': classroom_2.id}, format='json')
         measurement_station_1a = MeasurementStation.objects.get(name='Measurement Station 1a')
         self.assertIsNotNone(measurement_station_1a)
         self.assertEqual(measurement_station_1a.name, 'Measurement Station 1a')
