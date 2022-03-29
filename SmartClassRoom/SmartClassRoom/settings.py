@@ -105,7 +105,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'timescale.db.backends.postgresql',
-            'NAME': 'smartclassroom_test',
+            'NAME': 'smartclassroom_dev',
             'USER': 'postgres',
             'PASSWORD': 'Welcome12',
             'HOST': 'timescale.roulet.dev',
