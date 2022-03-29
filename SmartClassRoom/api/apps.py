@@ -12,5 +12,5 @@ class ApiConfig(AppConfig):
         if TEST:
             return
         # Start MQTT client
-        print('API ready - Initializing MQTT')
-        mqtt.client.loop_start()
+        # print('API ready - Initializing MQTT')
+        # mqtt.client.loop_start()

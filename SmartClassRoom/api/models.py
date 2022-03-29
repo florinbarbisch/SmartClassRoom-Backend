@@ -12,6 +12,7 @@ class Classroom(models.Model):
 
     def __str__(self):
         return self.name
+
     class Meta:
         ordering = ["-name"]
 
@@ -23,6 +24,7 @@ class MeasurementStation(models.Model):
 
     def __str__(self):
         return self.name
+
     class Meta:
         ordering = ["-name"]
 
@@ -37,7 +39,8 @@ class Measurement(TimescaleModel):
     light = models.DecimalField(max_digits=19, decimal_places=10, null=True)
 
     def __str__(self):
-        return self.insert_time
+        return str(self.id)
+
     class Meta:
         ordering = ["-insert_time"]
 
@@ -48,7 +51,8 @@ class EntranceEvent(TimescaleModel):
     insert_time = TimescaleDateTimeField(interval="7 days")
 
     def __str__(self):
-        return self.insert_time
+        return str(self.id)
+
     class Meta:
         ordering = ["-insert_time"]
 
@@ -65,5 +69,6 @@ class ConnectionHistory(TimescaleModel):
 
     def __str__(self):
         return self.insert_time
+
     class Meta:
         ordering = ["-insert_time"]
