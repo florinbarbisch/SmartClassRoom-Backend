@@ -28,7 +28,19 @@ SECRET_KEY = 'django-insecure-^!jbe!!fuj!@8)9du(5_9!-ehh610(h*wg9te=rcgpnirw^v65
 # if the value of the DJANGO_DEBUG environment variable is set to False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'django.roulet.dev']
-
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 if not DEBUG:
     SECRET_KEY = os.environ['secret_key']
     ALLOWED_HOSTS = ['127.0.0.1', '185.232.68.247', 'localhost', 'django.roulet.dev']
@@ -43,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    "corsheaders",
     'rest_framework',
     'rest_framework_simplejwt',
     'django_extensions',
@@ -57,6 +70,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
