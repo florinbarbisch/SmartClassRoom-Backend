@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from .models import Classroom, MeasurementStation, Measurement, ConnectionHistory, EntranceEvent
 from django.contrib.auth.models import User
-
+from rest_framework import status
 
 # No tests for Users and Groups, since we didn't create them. (django.contrib.auth.models created them)
 
@@ -43,8 +43,12 @@ class SmartclassroomTestCase(TestCase):
         ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:01:00+01:00", insert_time="2020-01-01T00:01:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-29, ping_backend=12, ping_broker=15, ping_grafana=12)
         ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:02:00+01:00", insert_time="2020-01-01T00:02:00+01:00", ip_address="192.168.1.1", bluetooth_connected=True, wlan_signal_strength=-63, ping_backend=12, ping_broker=15, ping_grafana=12)
         ConnectionHistory.objects.create(fk_measurement_station=measurement_station_2, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", ip_address="192.168.1.2", bluetooth_connected=False, wlan_signal_strength=-84, ping_backend=12, ping_broker=17, ping_grafana=14)
-
-
+        
+        Measurement.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:00:00+01:00", insert_time="2020-01-01T00:00:00+01:00", co2=10, temperature=20, humidity=30, motion=True, light=True)
+        Measurement.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:00:00+02:00", insert_time="2020-01-01T00:00:00+02:00", co2=20, temperature=20, humidity=30, motion=True, light=True)
+        Measurement.objects.create(fk_measurement_station=measurement_station_1, time="2020-01-01T00:00:00+03:00", insert_time="2020-01-01T00:00:00+03:00", co2=30, temperature=20, humidity=30, motion=True, light=True)
+        Measurement.objects.create(fk_measurement_station=measurement_station_2, time="2020-01-01T00:00:00+04:00", insert_time="2020-01-01T00:00:00+04:00", co2=40, temperature=20, humidity=30, motion=True, light=True)
+        
 class Classroom_Get(SmartclassroomTestCase):
     """
     Tests GET-Endpoint for Classrooms
@@ -318,3 +322,45 @@ class EntranceEvent_Put(SmartclassroomTestCase):
         self.assertEqual(entrance_event.time, datetime.strptime('2020-01-01T00:01:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
         self.assertEqual(entrance_event.insert_time, datetime.strptime('2020-01-01T00:01:00+01:00', '%Y-%m-%dT%H:%M:%S%z'))
         self.assertEqual(entrance_event.change, 3)
+
+class Measurement_Create(SmartclassroomTestCase):
+    """
+    Tests GET-Endpoint for MeasurementStations
+    """
+    def test_create_measurement(self):
+        measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 1")
+        response = self.client.post('/api/measurement/', {"fk_measurement_station":measurement_station_1, "time":"2020-02-02T00:00:00+02:00", "insert_time":"2020-02-02T00:00:00+02:00", "co2":10, "temperature":20, "humidity":30, "motion":True, "light":True}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        Measurement_1 = Measurement.objects.get(time="2020-02-02T00:00:00+02:00")
+        self.assertEqual(Measurement_1.time, datetime.strptime('2020-02-02T00:00:00+02:00', '%Y-%m-%dT%H:%M:%S%z'))
+        
+#Well doesnt work @ the time with the id
+class Measurement_Read(SmartclassroomTestCase):    
+    def test_read_measurement(self):
+        Measurement_1 = Measurement.objects.get(time="2020-01-01T00:00:00+01:00")
+        Measurement_2 = Measurement.objects.get(time="2020-01-01T00:00:00+02:00")
+        Measurement_3 = Measurement.objects.get(time="2020-01-01T00:00:00+03:00")
+        Measurement_4 = Measurement.objects.get(time="2020-01-01T00:00:00+04:00")
+        
+        response1 = self.client.get(f'/api/measurement/{Measurement_1.id}/', format='json')
+        response2 = self.client.get(f'/api/measurement/{Measurement_2.id}/', format='json')
+        response3 = self.client.get(f'/api/measurement/{Measurement_3.id}/', format='json')
+        response4 = self.client.get(f'/api/measurement/{Measurement_4.id}/', format='json')
+        
+        self.assertEqual(response1.data['time'], '2020-01-01T00:00:00+01:00')
+        self.assertEqual(response2.data['time'], '2020-01-01T00:00:00+02:00')
+        self.assertEqual(response3.data['time'], '2020-01-01T00:00:00+03:00')
+        self.assertEqual(response4.data['time'], '2020-01-01T00:00:00+04:00')
+        
+class Measurement_Update(SmartclassroomTestCase):    
+    def test_put_measurement(self):
+        pass
+
+class Measurement_Delete(SmartclassroomTestCase):
+    def test_delete_measurement(self):
+        is_state = Measurement.objects.all().count()
+        Measurement_1 = Measurement.objects.get(time="2020-01-01T00:00:00+01:00")
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        self.client.delete(f'/api/measurement/{Measurement_1.id}/', format='json')
+        self.assertEqual(is_state, Measurement.objects.all().count() + 1)
+        
