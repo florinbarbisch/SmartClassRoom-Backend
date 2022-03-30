@@ -64,6 +64,13 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     queryset = ConnectionHistory.objects.all()
     serializer_class = ConnectionHistorySerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        queryset = ConnectionHistory.objects.all()
+        fk_classroom = self.request.query_params.get('fk_classroom')
+        if fk_classroom is not None:
+            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+        return queryset
 
 
 class EntranceEventViewSet(viewsets.ModelViewSet):
@@ -73,3 +80,10 @@ class EntranceEventViewSet(viewsets.ModelViewSet):
     queryset = EntranceEvent.objects.all()
     serializer_class = EntranceEventSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = EntranceEvent.objects.all()
+        fk_classroom = self.request.query_params.get('fk_classroom')
+        if fk_classroom is not None:
+            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+        return queryset
