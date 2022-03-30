@@ -75,8 +75,11 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = ConnectionHistory.objects.all()
         fk_measurement_station = self.request.query_params.get('fk_measurement_station')
+        filter_type = self.request.query_params.get('filter_type')
         if fk_measurement_station is not None:
             queryset = queryset.filter(fk_measurement_station=fk_measurement_station)
+        if filter_type is not None and filter_type == 'latest':
+            queryset = [queryset.latest('time')]
         return queryset
 
 
