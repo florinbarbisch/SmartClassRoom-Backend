@@ -11,6 +11,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
@@ -27,6 +29,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
     """
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class MeasurementStationViewSet(viewsets.ModelViewSet):
@@ -35,6 +38,7 @@ class MeasurementStationViewSet(viewsets.ModelViewSet):
     """
     queryset = MeasurementStation.objects.all()
     serializer_class = MeasurementStationSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class MeasurementsViewSet(viewsets.ModelViewSet):
@@ -43,6 +47,7 @@ class MeasurementsViewSet(viewsets.ModelViewSet):
     """
     queryset = Measurement.objects.all()
     serializer_class = MeasurementsSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = Measurement.objects.all()
@@ -58,6 +63,7 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     """
     queryset = ConnectionHistory.objects.all()
     serializer_class = ConnectionHistorySerializer
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         queryset = ConnectionHistory.objects.all()
@@ -73,6 +79,7 @@ class EntranceEventViewSet(viewsets.ModelViewSet):
     """
     queryset = EntranceEvent.objects.all()
     serializer_class = EntranceEventSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = EntranceEvent.objects.all()
