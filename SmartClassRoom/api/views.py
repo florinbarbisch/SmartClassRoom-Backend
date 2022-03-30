@@ -40,6 +40,13 @@ class MeasurementStationViewSet(viewsets.ModelViewSet):
     serializer_class = MeasurementStationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = MeasurementStation.objects.all()
+        fk_classroom = self.request.query_params.get('fk_classroom', None)
+        if fk_classroom is not None:
+            queryset = queryset.filter(fk_classroom=fk_classroom)
+        return queryset
+
 
 class MeasurementsViewSet(viewsets.ModelViewSet):
     """
@@ -51,9 +58,9 @@ class MeasurementsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Measurement.objects.all()
-        fk_classroom = self.request.query_params.get('fk_classroom')
-        if fk_classroom is not None:
-            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+        fk_measurement_station = self.request.query_params.get('fk_measurement_station')
+        if fk_measurement_station is not None:
+            queryset = queryset.filter(fk_measurement_station=fk_measurement_station)
         return queryset
 
 
@@ -67,9 +74,9 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = ConnectionHistory.objects.all()
-        fk_classroom = self.request.query_params.get('fk_classroom')
-        if fk_classroom is not None:
-            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+        fk_measurement_station = self.request.query_params.get('fk_measurement_station')
+        if fk_measurement_station is not None:
+            queryset = queryset.filter(fk_measurement_station=fk_measurement_station)
         return queryset
 
 
