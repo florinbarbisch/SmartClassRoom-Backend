@@ -380,7 +380,7 @@ class Measurement_Create(SmartClassroomTestCase):
 
     def test_create_measurement(self):
         measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 1")
-        response = self.client.post('/api/measurement/', {"fk_measurement_station": measurement_station_1,
+        response = self.client.post('/api/Measurements/', {"fk_measurement_station": measurement_station_1,
                                                           "time": "2020-02-02T00:00:00+02:00",
                                                           "insert_time": "2020-02-02T00:00:00+02:00", "co2": 10,
                                                           "temperature": 20, "humidity": 30, "motion": True,
@@ -398,10 +398,10 @@ class Measurement_Read(SmartClassroomTestCase):
         Measurement_3 = Measurement.objects.get(time="2020-01-01T00:00:00+03:00")
         Measurement_4 = Measurement.objects.get(time="2020-01-01T00:00:00+04:00")
 
-        response1 = self.client.get(f'/api/measurement/{Measurement_1.id}/', format='json')
-        response2 = self.client.get(f'/api/measurement/{Measurement_2.id}/', format='json')
-        response3 = self.client.get(f'/api/measurement/{Measurement_3.id}/', format='json')
-        response4 = self.client.get(f'/api/measurement/{Measurement_4.id}/', format='json')
+        response1 = self.client.get(f'/api/Measurements/{Measurement_1.id}/', format='json')
+        response2 = self.client.get(f'/api/Measurements/{Measurement_2.id}/', format='json')
+        response3 = self.client.get(f'/api/Measurements/{Measurement_3.id}/', format='json')
+        response4 = self.client.get(f'/api/Measurements/{Measurement_4.id}/', format='json')
 
         self.assertEqual(response1.data['time'], '2020-01-01T00:00:00+01:00')
         self.assertEqual(response2.data['time'], '2020-01-01T00:00:00+02:00')
@@ -419,5 +419,5 @@ class Measurement_Delete(SmartClassroomTestCase):
         is_state = Measurement.objects.all().count()
         Measurement_1 = Measurement.objects.get(time="2020-01-01T00:00:00+01:00")
         measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
-        self.client.delete(f'/api/measurement/{Measurement_1.id}/', format='json')
+        self.client.delete(f'/api/Measurements/{Measurement_1.id}/', format='json')
         self.assertEqual(is_state, Measurement.objects.all().count() + 1)
