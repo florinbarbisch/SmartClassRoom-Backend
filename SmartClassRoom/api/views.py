@@ -48,7 +48,13 @@ class MeasurementsViewSet(viewsets.ModelViewSet):
     queryset = Measurement.objects.all()
     serializer_class = MeasurementsSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = ['id', 'fk_measurement_station']
+
+    def get_queryset(self):
+        queryset = Measurement.objects.all()
+        fk_classroom = self.request.query_params.get('fk_classroom')
+        if fk_classroom is not None:
+            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+        return queryset
 
 
 class ConnectionHistoryViewSet(viewsets.ModelViewSet):
