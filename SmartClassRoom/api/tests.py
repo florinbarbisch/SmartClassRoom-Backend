@@ -156,6 +156,14 @@ class ConnectionHistory_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['results'][0]['ping_broker'], 15)
         self.assertEqual(response.data['results'][0]['ping_grafana'], 12)
 
+    def test_get_filtered_connection_history(self):
+        classroom_1 = Classroom.objects.get(name='Classroom 1')
+        response = self.client.get(f'/api/ConnectionHistory/?fk_classroom={classroom_1.id}', format='json')
+        self.assertEqual(len(response.data['results']), 4)
+        classroom_2 = Classroom.objects.get(name='Classroom 2')
+        response = self.client.get(f'/api/ConnectionHistory/?fk_classroom={classroom_2.id}', format='json')
+        self.assertEqual(len(response.data['results']), 0)
+
     def test_get_one_connection_history(self):
         connection_history_1 = ConnectionHistory.objects.get(
             fk_measurement_station=MeasurementStation.objects.get(name="Measurement Station 2"))
@@ -310,6 +318,14 @@ class EntranceEvent_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['results'][0]['insert_time'], '2020-01-01T00:02:00+01:00')
         self.assertEqual(response.data['results'][0]['fk_measurement_station'], measurement_station_1.id)
         self.assertEqual(response.data['results'][0]['change'], 1)
+        
+    def test_get_filtered_entrance_events(self):
+        classroom_1 = Classroom.objects.get(name='Classroom 1')
+        response = self.client.get(f'/api/EntranceEvents/?fk_classroom={classroom_1.id}', format='json')
+        self.assertEqual(len(response.data['results']), 4)
+        classroom_2 = Classroom.objects.get(name='Classroom 2')
+        response = self.client.get(f'/api/EntranceEvents/?fk_classroom={classroom_2.id}', format='json')
+        self.assertEqual(len(response.data['results']), 0)
 
     def test_get_entrance_event_by_id(self):
         measurement_station_1 = MeasurementStation.objects.get(name="Measurement Station 2")
