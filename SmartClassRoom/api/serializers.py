@@ -30,7 +30,7 @@ class MeasurementStationSerializer(serializers.ModelSerializer):
 class MeasurementsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Measurement
-        fields = ['id', 'url', 'fk_measurement_station', 'time', 'measurement_time', 'co2', 'temperature', 'humidity', 'motion', 'light']
+        fields = ['id', 'url', 'fk_measurement_station', 'time', 'insert_time', 'co2', 'temperature', 'humidity', 'motion', 'light']
 
 
 class ConnectionHistorySerializer(serializers.ModelSerializer):
