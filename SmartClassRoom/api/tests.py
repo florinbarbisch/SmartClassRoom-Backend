@@ -94,6 +94,10 @@ class Classroom_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['description'], 'Description 1')
         self.assertEqual(response.data['room_number'], '1')
 
+    def test_get_non_existing_classroom(self):
+        response = self.client.get('/api/Classrooms/42/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class Classroom_Post(SmartClassroomTestCase):
     """
@@ -109,17 +113,37 @@ class Classroom_Post(SmartClassroomTestCase):
         self.assertEqual(classroom_4.description, 'Description 4')
         self.assertEqual(classroom_4.room_number, '4')
 
+    def test_post_classroom_bad_request_missing(self):
+        response = self.client.post('/api/Classrooms/', {'name': 'Classroom 4'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_post_classroom_bad_request_format(self):
+        response = self.client.post('/api/Classrooms/', {'name': 1, 'room_number': True}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class Classroom_Delete(SmartClassroomTestCase):
     """
     Tests DELETE-Endpoint for Classrooms
     """
 
-    def test_post_classroom(self):
+    def test_delete_classroom(self):
         classroom_3 = Classroom.objects.get(name='Classroom 3')
         self.client.delete(f'/api/Classrooms/{classroom_3.id}/', format='json')
         self.assertEqual(Classroom.objects.count(), 2)
         self.assertEqual(Classroom.objects.filter(name='Classroom 3').count(), 0)
+
+    def test_delete_classroom_not_found(self):
+        response = self.client.delete('/api/Classrooms/42/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_classroom_not_found_2(self):
+        response = self.client.delete('/api/Classrooms/asdf/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_classroom_not_found_3(self):
+        response = self.client.delete('/api/Classrooms/asdf/42/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class Classroom_Put(SmartClassroomTestCase):
@@ -136,6 +160,21 @@ class Classroom_Put(SmartClassroomTestCase):
         self.assertEqual(classroom_1a.name, 'Classroom 1a')
         self.assertEqual(classroom_1a.description, 'Description 1a')
         self.assertEqual(classroom_1a.room_number, '1a')
+
+    def test_put_classroom_bad_request_missing(self):
+        classroom_1 = Classroom.objects.get(name='Classroom 1')
+        response = self.client.put(f'/api/Classrooms/{classroom_1.id}/', {'name': 'Classroom 1a'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_classroom_bad_request_format(self):
+        classroom_1 = Classroom.objects.get(name='Classroom 1')
+        response = self.client.put(f'/api/Classrooms/{classroom_1.id}/', {'name': 42}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_classroom_not_found(self):
+        response = self.client.put(f'/api/Classrooms/42/',
+            {'name': 'Classroom 1a', 'description': 'Description 1a', 'room_number': '1a'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 # CRUD Tests for ConnectionHistory
