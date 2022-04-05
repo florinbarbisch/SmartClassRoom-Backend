@@ -79,6 +79,9 @@ class Classroom_Get(SmartClassroomTestCase):
     """
     Tests GET-Endpoint for Classrooms
     """
+    classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+    classroom_deleted_id = classroom_deleted.id
+    classroom_deleted.delete()
 
     def test_get_all_classrooms(self):
         response = self.client.get('/api/Classrooms/', format='json')
@@ -95,7 +98,7 @@ class Classroom_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['room_number'], '1')
 
     def test_get_non_existing_classroom(self):
-        response = self.client.get('/api/Classrooms/42/', format='json')
+        response = self.client.get(f'/api/Classrooms/{self.classroom_deleted_id}/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -114,11 +117,15 @@ class Classroom_Post(SmartClassroomTestCase):
         self.assertEqual(classroom_4.room_number, '4')
 
     def test_post_classroom_bad_request_missing(self):
+        # missing description, room_number
         response = self.client.post('/api/Classrooms/', {'name': 'Classroom 4'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_classroom_bad_request_format(self):
-        response = self.client.post('/api/Classrooms/', {'name': 1, 'room_number': True}, format='json')
+        # name is not a string, room_number is not a string
+        response = self.client.post('/api/Classrooms/',
+                                    {'name': 1, 'description': 'Description 4', 'room_number': True},
+                                    format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -126,6 +133,9 @@ class Classroom_Delete(SmartClassroomTestCase):
     """
     Tests DELETE-Endpoint for Classrooms
     """
+    classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+    classroom_deleted_id = classroom_deleted.id
+    classroom_deleted.delete()
 
     def test_delete_classroom(self):
         classroom_3 = Classroom.objects.get(name='Classroom 3')
@@ -134,15 +144,18 @@ class Classroom_Delete(SmartClassroomTestCase):
         self.assertEqual(Classroom.objects.filter(name='Classroom 3').count(), 0)
 
     def test_delete_classroom_not_found(self):
-        response = self.client.delete('/api/Classrooms/42/', format='json')
+        # classroom with this id no longer exists
+        response = self.client.delete(f'/api/Classrooms/{self.classroom_deleted_id}/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_classroom_not_found_2(self):
+        # id is string instead of int
         response = self.client.delete('/api/Classrooms/asdf/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_classroom_not_found_3(self):
-        response = self.client.delete('/api/Classrooms/asdf/42/', format='json')
+        # wrong url format
+        response = self.client.delete(f'/api/Classrooms/asdf/{self.classroom_deleted_id}/', format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -150,6 +163,9 @@ class Classroom_Put(SmartClassroomTestCase):
     """
     Tests PUT-Endpoint for Classrooms
     """
+    classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+    classroom_deleted_id = classroom_deleted.id
+    classroom_deleted.delete()
 
     def test_put_classroom(self):
         classroom_1 = Classroom.objects.get(name='Classroom 1')
@@ -162,18 +178,23 @@ class Classroom_Put(SmartClassroomTestCase):
         self.assertEqual(classroom_1a.room_number, '1a')
 
     def test_put_classroom_bad_request_missing(self):
+        # missing description, room_number
         classroom_1 = Classroom.objects.get(name='Classroom 1')
         response = self.client.put(f'/api/Classrooms/{classroom_1.id}/', {'name': 'Classroom 1a'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_put_classroom_bad_request_format(self):
+        # name is as an integer instead of a string, room_number is a boolean instead of a string
         classroom_1 = Classroom.objects.get(name='Classroom 1')
-        response = self.client.put(f'/api/Classrooms/{classroom_1.id}/', {'name': 42}, format='json')
+        response = self.client.put(f'/api/Classrooms/{classroom_1.id}/',
+                                   {'name': 42, 'description': 'Description 1a', 'room_number': False}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_put_classroom_not_found(self):
-        response = self.client.put(f'/api/Classrooms/42/',
-            {'name': 'Classroom 1a', 'description': 'Description 1a', 'room_number': '1a'}, format='json')
+        # classroom with this id no longer exists
+        response = self.client.put(f'/api/Classrooms/{self.classroom_deleted_id}/',
+                                   {'name': 'Classroom 1a', 'description': 'Description 1a', 'room_number': '1a'},
+                                   format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
