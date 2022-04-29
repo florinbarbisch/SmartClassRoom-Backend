@@ -1,4 +1,4 @@
-# SmartClassRoom-Backend ![image](https://user-images.githubusercontent.com/32195170/166079709-4a57ce5f-a0fa-4a98-8f06-88b81d868cfe.png =100x20)
+# SmartClassRoom-Backend ![image](https://user-images.githubusercontent.com/32195170/166079709-4a57ce5f-a0fa-4a98-8f06-88b81d868cfe.png | width=100)
 Rest Django Backend
 
 ## Run Django Server
