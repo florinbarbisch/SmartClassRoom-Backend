@@ -6,7 +6,8 @@ Rest Django Backend
 
 ## Run Django Server
 1. `cd SmartClassRoom`
-2. `python manage.py runserver`
+2. `pip -r requirements.txt`
+3. `python manage.py runserver`
 
 ## Test REST API
 1. `cd SmartClassRoom`
