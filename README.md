@@ -1,4 +1,4 @@
-# SmartClassRoom-Backend <img src="https://user-images.githubusercontent.com/32195170/166079709-4a57ce5f-a0fa-4a98-8f06-88b81d868cfe.png" width="100" height="100">
+# SmartClassRoom-Backend <img src="https://user-images.githubusercontent.com/32195170/166079709-4a57ce5f-a0fa-4a98-8f06-88b81d868cfe.png" width="auto" height="333">
 
 Rest Django Backend
 
