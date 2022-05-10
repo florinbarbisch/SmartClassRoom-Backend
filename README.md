@@ -28,10 +28,10 @@ https://docs.timescale.com/install/latest/installation-docker/#set-up-the-timesc
 DATABASES = {
         'default': {
             'ENGINE': 'timescale.db.backends.postgresql',
-            'NAME': 'smartclassroom_dev',
-            'USER': 'postgres',
-            'PASSWORD': 'Welcome12',
-            'HOST': 'timescale.roulet.dev',
+            'NAME': 'DBNAME',
+            'USER': 'YOURDBUSER',
+            'PASSWORD': 'YourPassword',
+            'HOST': 'YOURLOCALPORT',
             'PORT': '5432',
             'TEST': {
                 'NAME': 'smartclassroom_test_unittest',
