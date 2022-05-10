@@ -22,7 +22,8 @@ https://docs.timescale.com/install/latest/installation-docker/#set-up-the-timesc
 -v /your/data/dir:/var/lib/postgresql/data \
 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg14`
 2. add the database settings to the settings.py in the root dir:
-DATABASES = {
+
+`DATABASES = {
         'default': {
             'ENGINE': 'timescale.db.backends.postgresql',
             'NAME': 'smartclassroom_dev',
@@ -35,7 +36,7 @@ DATABASES = {
             },
         }
     }
-
+`
 
 
 ## Django Admin Dashboard
