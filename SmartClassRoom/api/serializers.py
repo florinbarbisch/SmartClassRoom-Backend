@@ -18,7 +18,8 @@ class GroupSerializer(serializers.ModelSerializer):
 class ClassroomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classroom
-        fields = ['id', 'url', 'name', 'description', 'room_number', 'updated_on']
+        fields = ['id', 'url', 'name', 'description',
+                  'room_number', 'updated_on']
 
 
 class MeasurementStationSerializer(serializers.ModelSerializer):
@@ -30,16 +31,38 @@ class MeasurementStationSerializer(serializers.ModelSerializer):
 class MeasurementsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Measurement
-        fields = ['id', 'url', 'fk_measurement_station', 'time', 'insert_time', 'co2', 'temperature', 'humidity', 'motion', 'light']
+        fields = [
+            'id',
+            'url',
+            'fk_measurement_station',
+            'time',
+            'insert_time',
+            'co2',
+            'temperature',
+            'humidity',
+            'motion',
+            'light']
 
 
 class ConnectionHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionHistory
-        fields = ['id', 'url','fk_measurement_station', 'time', 'insert_time', 'ip_address', 'bluetooth_connected', 'wlan_signal_strength', 'ping_backend', 'ping_broker', 'ping_grafana']
+        fields = [
+            'id',
+            'url',
+            'fk_measurement_station',
+            'time',
+            'insert_time',
+            'ip_address',
+            'bluetooth_connected',
+            'wlan_signal_strength',
+            'ping_backend',
+            'ping_broker',
+            'ping_grafana']
 
 
 class EntranceEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = EntranceEvent
-        fields = ['id', 'url', 'fk_measurement_station', 'time', 'insert_time', 'change']
+        fields = ['id', 'url', 'fk_measurement_station',
+                  'time', 'insert_time', 'change']

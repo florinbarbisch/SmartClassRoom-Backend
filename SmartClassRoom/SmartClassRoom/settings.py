@@ -44,7 +44,8 @@ CORS_ALLOW_HEADERS = [
 ]
 if not DEBUG:
     SECRET_KEY = os.environ['secret_key']
-    ALLOWED_HOSTS = ['127.0.0.1', '185.232.68.247', 'localhost', 'django.roulet.dev']
+    ALLOWED_HOSTS = ['127.0.0.1', '185.232.68.247',
+                     'localhost', 'django.roulet.dev']
 
 # Application definition
 
@@ -133,7 +134,7 @@ else:
             'PORT': '5432',
             'TEST': {
                 'NAME': 'smartclassroom_test_unittest',
-        },
+            },
         }
     }
 
