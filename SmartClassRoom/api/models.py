@@ -38,10 +38,12 @@ class Measurement(TimescaleModel):
     """
     Measurement model, always connected to a measurement station
     """
-    fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
+    fk_measurement_station = models.ForeignKey(
+        MeasurementStation, on_delete=models.CASCADE)
     insert_time = TimescaleDateTimeField(interval="7 days")
     co2 = models.DecimalField(max_digits=19, decimal_places=10, null=True)
-    temperature = models.DecimalField(max_digits=19, decimal_places=10, null=True)
+    temperature = models.DecimalField(
+        max_digits=19, decimal_places=10, null=True)
     humidity = models.DecimalField(max_digits=19, decimal_places=10, null=True)
     motion = models.BooleanField(default=False, null=True)
     light = models.DecimalField(max_digits=19, decimal_places=10, null=True)
@@ -57,7 +59,8 @@ class EntranceEvent(TimescaleModel):
     """
     EntranceEvent model, always connected to a measurement station
     """
-    fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
+    fk_measurement_station = models.ForeignKey(
+        MeasurementStation, on_delete=models.CASCADE)
     change = models.IntegerField()
     insert_time = TimescaleDateTimeField(interval="7 days")
 
@@ -72,7 +75,8 @@ class ConnectionHistory(TimescaleModel):
     """
     ConnectionHistory model, always connected to a measurement station
     """
-    fk_measurement_station = models.ForeignKey(MeasurementStation, on_delete=models.CASCADE)
+    fk_measurement_station = models.ForeignKey(
+        MeasurementStation, on_delete=models.CASCADE)
     insert_time = TimescaleDateTimeField(interval="7 days")
     ip_address = models.GenericIPAddressField()
     bluetooth_connected = models.BooleanField(default=False, null=True)

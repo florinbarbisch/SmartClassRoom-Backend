@@ -2,7 +2,8 @@ from django.contrib.auth.models import User, Group
 from .models import Classroom, ConnectionHistory, MeasurementStation, Measurement, EntranceEvent
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer, ConnectionHistorySerializer, EntranceEventSerializer
+from api.serializers import UserSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer
+from api.serializers import MeasurementsSerializer, ConnectionHistorySerializer, EntranceEventSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -60,9 +61,11 @@ class MeasurementsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """GET Measurements for a specific measurement station"""
         queryset = Measurement.objects.all()
-        fk_measurement_station = self.request.query_params.get('fk_measurement_station')
+        fk_measurement_station = self.request.query_params.get(
+            'fk_measurement_station')
         if fk_measurement_station is not None:
-            queryset = queryset.filter(fk_measurement_station=fk_measurement_station)
+            queryset = queryset.filter(
+                fk_measurement_station=fk_measurement_station)
         return queryset
 
 
@@ -73,17 +76,19 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     queryset = ConnectionHistory.objects.all()
     serializer_class = ConnectionHistorySerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
         """
         GET ConnectionHistory for a specific measurement station
         If filter_type is set to 'latest', only return latest connection history for given measurement station
         """
         queryset = ConnectionHistory.objects.all()
-        fk_measurement_station = self.request.query_params.get('fk_measurement_station')
+        fk_measurement_station = self.request.query_params.get(
+            'fk_measurement_station')
         filter_type = self.request.query_params.get('filter_type')
         if fk_measurement_station is not None:
-            queryset = queryset.filter(fk_measurement_station=fk_measurement_station)
+            queryset = queryset.filter(
+                fk_measurement_station=fk_measurement_station)
         if filter_type is not None and filter_type == 'latest':
             queryset = [queryset.latest('time')]
         return queryset
@@ -102,5 +107,6 @@ class EntranceEventViewSet(viewsets.ModelViewSet):
         queryset = EntranceEvent.objects.all()
         fk_classroom = self.request.query_params.get('fk_classroom')
         if fk_classroom is not None:
-            queryset = queryset.filter(fk_measurement_station__fk_classroom=fk_classroom)
+            queryset = queryset.filter(
+                fk_measurement_station__fk_classroom=fk_classroom)
         return queryset
