@@ -17,11 +17,25 @@ Rest Django Backend
 ## Timescale Docker installation
 https://docs.timescale.com/install/latest/installation-docker/#set-up-the-timescaledb-extension
 
-Command: 
-
+1. Command: 
 `docker run -d --name timescaledb -p 5432:5432 \
 -v /your/data/dir:/var/lib/postgresql/data \
 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg14`
+2. add the database settings to the settings.py in the root dir:
+DATABASES = {
+        'default': {
+            'ENGINE': 'timescale.db.backends.postgresql',
+            'NAME': 'smartclassroom_dev',
+            'USER': 'postgres',
+            'PASSWORD': 'Welcome12',
+            'HOST': 'timescale.roulet.dev',
+            'PORT': '5432',
+            'TEST': {
+                'NAME': 'smartclassroom_test_unittest',
+            },
+        }
+    }
+
 
 
 ## Django Admin Dashboard
