@@ -2,7 +2,8 @@ from django.contrib.auth.models import User, Group
 from .models import Classroom, ConnectionHistory, MeasurementStation, Measurement, EntranceEvent
 from rest_framework import viewsets
 from rest_framework import permissions
-from api.serializers import UserSerializer, GroupSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer, MeasurementsSerializer, ConnectionHistorySerializer, EntranceEventSerializer
+from api.serializers import UserSerializer, GroupSerializer, ClassroomSerializer, MeasurementStationSerializer
+from api.serializers import MeasurementsSerializer, ConnectionHistorySerializer, EntranceEventSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

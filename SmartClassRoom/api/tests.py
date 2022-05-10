@@ -728,7 +728,7 @@ class Measurement_Delete(SmartClassroomTestCase):
         is_state = Measurement.objects.all().count()
         Measurement_1 = Measurement.objects.get(
             time="2020-01-01T00:00:00+01:00")
-        measurement_station_2 = MeasurementStation.objects.get(
+        MeasurementStation.objects.get(
             name="Measurement Station 2")
         self.client.delete(
             f'/api/Measurements/{Measurement_1.id}/', format='json')
