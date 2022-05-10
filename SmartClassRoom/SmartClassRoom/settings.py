@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+import sys
+import logging
 from pathlib import Path
 from datetime import timedelta
 
@@ -175,3 +177,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    logging.disable(logging.CRITICAL)
