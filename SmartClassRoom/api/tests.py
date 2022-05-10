@@ -311,6 +311,18 @@ class ConnectionHistory_Get(SmartClassroomTestCase):
     Tests GET-Endpoint for ConnectionHistory
     """
 
+    def setUp(self):
+        super().setUp()
+        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
+            name="Measurement Station 03", active=True)
+        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2021-01-01T00:00:00+01:00",
+                                            insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
+                                            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12,
+                                            ping_broker=16, ping_grafana=13)
+        self.connection_history_deleted_id = connection_history_deleted.id
+        connection_history_deleted.delete()
+
     def test_get_all_connection_history(self):
         response = self.client.get('/api/ConnectionHistory/', format='json')
         self.assertEqual(len(response.data['results']), 4)
@@ -367,6 +379,10 @@ class ConnectionHistory_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['ping_broker'], 17)
         self.assertEqual(response.data['ping_grafana'], 14)
 
+    def test_get_non_existing_connection_history(self):
+        response = self.client.get(f'/api/ConnectionHistory/{self.connection_history_deleted_id}/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class ConnectionHistory_Post(SmartClassroomTestCase):
     """
@@ -404,11 +420,48 @@ class ConnectionHistory_Post(SmartClassroomTestCase):
         self.assertEqual(connection_history.ping_broker, 15)
         self.assertEqual(connection_history.ping_grafana, 12)
 
+    def test_post_connection_history_bad_request_missing(self):
+        measurement_station = MeasurementStation.objects.get(name="Measurement Station 3")
+        # missing time, insert_time
+        response = self.client.post(
+            '/api/ConnectionHistory/', {'fk_measurement_station': measurement_station.id,
+                          'ip_address': '192.168.1.22',
+                          'bluetooth_connected': True,
+                          'wlan_signal_strength': -63,
+                          'ping_backend': 12,
+                          'ping_broker': 15,
+                          'ping_grafana': 12},
+                         format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_post_connection_history_bad_request_format(self):
+        # fk_measurement_station is not a boolean, wlan_signal_strength is not a string
+        response = self.client.post('/api/ConnectionHistory/',
+                                    {'fk_measurement_station': True,
+                                    'ip_address': 2342,
+                                    'bluetooth_connected': True,
+                                    'wlan_signal_strength': "hello",
+                                    'ping_backend': 12,
+                                    'ping_broker': 15,
+                                    'ping_grafana': 12},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ConnectionHistory_Delete(SmartClassroomTestCase):
     """
     Tests DELETE-Endpoint for ConnectionHistory
     """
+    def setUp(self):
+        super().setUp()
+        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
+            name="Measurement Station 03", active=True)
+        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1,
+            time="2021-01-01T00:00:00+01:00", insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
+            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
+        self.connection_history_deleted_id = connection_history_deleted.id
+        connection_history_deleted.delete()
 
     def test_delete_connection_history(self):
         measurement_station = MeasurementStation.objects.get(
@@ -421,11 +474,39 @@ class ConnectionHistory_Delete(SmartClassroomTestCase):
         self.assertEqual(ConnectionHistory.objects.filter(
             fk_measurement_station=measurement_station.id).count(), 0)
 
+    def test_delete_connection_history_not_found(self):
+        # connection_history with this id no longer exists
+        response = self.client.delete(
+            f'/api/ConnectionHistory/{self.connection_history_deleted_id}/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_connection_history_not_found_2(self):
+        # id is string instead of int
+        response = self.client.delete('/api/ConnectionHistory/asdf/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_connection_history_not_found_3(self):
+        # wrong url format
+        response = self.client.delete(
+            f'/api/ConnectionHistory/asdf/{self.connection_history_deleted_id}/',
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class ConnectionHistory_Put(SmartClassroomTestCase):
     """
     Tests PUT-Endpoint for ConnectionHistory
     """
+    def setUp(self):
+        super().setUp()
+        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
+        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
+            name="Measurement Station 03", active=True)
+        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1,
+            time="2021-01-01T00:00:00+01:00", insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
+            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
+        self.connection_history_deleted_id = connection_history_deleted.id
+        connection_history_deleted.delete()
 
     def test_put_connection_history(self):
         measurement_station_2 = MeasurementStation.objects.get(
@@ -460,6 +541,52 @@ class ConnectionHistory_Put(SmartClassroomTestCase):
         self.assertEqual(connection_history.ping_backend, 11)
         self.assertEqual(connection_history.ping_broker, 12)
         self.assertEqual(connection_history.ping_grafana, 11)
+
+    def test_put_connection_history_bad_request_missing(self):
+        # missing time, insert_time
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        connection_history_1 = ConnectionHistory.objects.get(fk_measurement_station=measurement_station_2.id)
+        response = self.client.put(
+            f'/api/ConnectionHistory/{connection_history_1.id}/', {'fk_measurement_station': measurement_station_2.id,
+                    'ip_address': '192.168.1.12', 'bluetooth_connected': False, 'wlan_signal_strength': -43, 'ping_backend': 11,
+                    'ping_broker': 12, 'ping_grafana': 11}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_connection_history_bad_request_format(self):
+        # time is has the wrong time format
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        connection_history_1 = ConnectionHistory.objects.get(fk_measurement_station=measurement_station_2.id)
+        response = self.client.put(
+            f'/api/ConnectionHistory/{connection_history_1.id}/',
+            {'fk_measurement_station': measurement_station_2.id,
+                'time': '01-01-2020T00:00:00+01:00',
+                'insert_time': '2020-01-01T00:00:00+01:00',
+                'ip_address': '192.168.1.12',
+                'bluetooth_connected': False,
+                'wlan_signal_strength': -43,
+                'ping_backend': 11,
+                'ping_broker': 12,
+                'ping_grafana': 11},
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_put_connection_history_not_found(self):
+        # ConnectionHistory with this id no longer exists
+        measurement_station_2 = MeasurementStation.objects.get(name="Measurement Station 2")
+        response = self.client.put(
+            f'/api/ConnectionHistory/{self.connection_history_deleted_id}/',
+            {
+                'fk_measurement_station': measurement_station_2.id,
+                'time': '2020-01-01T00:00:00+01:00',
+                'insert_time': '2020-01-01T00:00:00+01:00',
+                'ip_address': '192.168.1.12',
+                'bluetooth_connected': False,
+                'wlan_signal_strength': -43,
+                'ping_backend': 11,
+                'ping_broker': 12,
+                'ping_grafana': 11},
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 # CRUD Tests for MeasurementStation
