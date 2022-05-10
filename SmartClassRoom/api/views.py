@@ -42,6 +42,7 @@ class MeasurementStationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """GET MeasurementStations for a specific classroom"""
         queryset = MeasurementStation.objects.all()
         fk_classroom = self.request.query_params.get('fk_classroom', None)
         if fk_classroom is not None:
@@ -58,6 +59,7 @@ class MeasurementsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """GET Measurements for a specific measurement station"""
         queryset = Measurement.objects.all()
         fk_measurement_station = self.request.query_params.get(
             'fk_measurement_station')
@@ -76,6 +78,10 @@ class ConnectionHistoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """
+        GET ConnectionHistory for a specific measurement station
+        If filter_type is set to 'latest', only return latest connection history for given measurement station
+        """
         queryset = ConnectionHistory.objects.all()
         fk_measurement_station = self.request.query_params.get(
             'fk_measurement_station')
@@ -97,6 +103,7 @@ class EntranceEventViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """GET EntranceEvents for a specific measurement station"""
         queryset = EntranceEvent.objects.all()
         fk_classroom = self.request.query_params.get('fk_classroom')
         if fk_classroom is not None:

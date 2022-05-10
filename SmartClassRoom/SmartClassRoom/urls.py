@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+# Register our views in the API router
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
@@ -32,6 +33,7 @@ router.register(r'Classrooms', views.ClassroomViewSet)
 router.register(r'ConnectionHistory', views.ConnectionHistoryViewSet)
 router.register(r'EntranceEvents', views.EntranceEventViewSet)
 
+# Set URL patterns for the API
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
