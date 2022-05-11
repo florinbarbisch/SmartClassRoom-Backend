@@ -30,6 +30,11 @@ class SmartClassroomTestCase(TestCase):
         Classroom.objects.create(
             name="Classroom 3", description="Description 3", room_number="3")
 
+        classroom_deleted = Classroom.objects.create(
+            name="Classroom D", description="Description D", room_number="1")
+        self.classroom_deleted_id = classroom_deleted.id
+        classroom_deleted.delete()
+
         MeasurementStation.objects.create(
             fk_classroom=Classroom.objects.get(
                 name="Classroom 1"),
@@ -121,6 +126,13 @@ class SmartClassroomTestCase(TestCase):
             ping_broker=17,
             ping_grafana=14)
 
+        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2021-01-01T00:00:00+01:00",
+                                            insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
+                                            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12,
+                                            ping_broker=16, ping_grafana=13)
+        self.connection_history_deleted_id = connection_history_deleted.id
+        connection_history_deleted.delete()
+
         Measurement.objects.create(
             fk_measurement_station=measurement_station_1,
             time="2020-01-01T00:00:00+01:00",
@@ -163,10 +175,6 @@ class Classroom_Get(SmartClassroomTestCase):
     """
     Tests GET-Endpoint for Classrooms
     """
-    classroom_deleted = Classroom.objects.create(
-        name="Classroom D", description="Description D", room_number="1")
-    classroom_deleted_id = classroom_deleted.id
-    classroom_deleted.delete()
 
     def test_get_all_classrooms(self):
         response = self.client.get('/api/Classrooms/', format='json')
@@ -226,10 +234,6 @@ class Classroom_Delete(SmartClassroomTestCase):
     """
     Tests DELETE-Endpoint for Classrooms
     """
-    classroom_deleted = Classroom.objects.create(
-        name="Classroom D", description="Description D", room_number="1")
-    classroom_deleted_id = classroom_deleted.id
-    classroom_deleted.delete()
 
     def test_delete_classroom(self):
         classroom_3 = Classroom.objects.get(name='Classroom 3')
@@ -261,10 +265,6 @@ class Classroom_Put(SmartClassroomTestCase):
     """
     Tests PUT-Endpoint for Classrooms
     """
-    classroom_deleted = Classroom.objects.create(
-        name="Classroom D", description="Description D", room_number="1")
-    classroom_deleted_id = classroom_deleted.id
-    classroom_deleted.delete()
 
     def test_put_classroom(self):
         classroom_1 = Classroom.objects.get(name='Classroom 1')
@@ -318,18 +318,6 @@ class ConnectionHistory_Get(SmartClassroomTestCase):
     """
     Tests GET-Endpoint for ConnectionHistory
     """
-
-    def setUp(self):
-        super().setUp()
-        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
-        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
-            name="Measurement Station 03", active=True)
-        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1, time="2021-01-01T00:00:00+01:00",
-                                            insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
-                                            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12,
-                                            ping_broker=16, ping_grafana=13)
-        self.connection_history_deleted_id = connection_history_deleted.id
-        connection_history_deleted.delete()
 
     def test_get_all_connection_history(self):
         response = self.client.get('/api/ConnectionHistory/', format='json')
@@ -460,16 +448,6 @@ class ConnectionHistory_Delete(SmartClassroomTestCase):
     """
     Tests DELETE-Endpoint for ConnectionHistory
     """
-    def setUp(self):
-        super().setUp()
-        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
-        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
-            name="Measurement Station 03", active=True)
-        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1,
-            time="2021-01-01T00:00:00+01:00", insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
-            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
-        self.connection_history_deleted_id = connection_history_deleted.id
-        connection_history_deleted.delete()
 
     def test_delete_connection_history(self):
         measurement_station = MeasurementStation.objects.get(
@@ -505,16 +483,6 @@ class ConnectionHistory_Put(SmartClassroomTestCase):
     """
     Tests PUT-Endpoint for ConnectionHistory
     """
-    def setUp(self):
-        super().setUp()
-        classroom_deleted = Classroom.objects.create(name="Classroom D", description="Description D", room_number="1")
-        measurement_station_1 = MeasurementStation.objects.create(fk_classroom=classroom_deleted,
-            name="Measurement Station 03", active=True)
-        connection_history_deleted = ConnectionHistory.objects.create(fk_measurement_station=measurement_station_1,
-            time="2021-01-01T00:00:00+01:00", insert_time="2021-01-01T00:00:00+01:00", ip_address="192.168.1.1",
-            bluetooth_connected=True, wlan_signal_strength=-65, ping_backend=12, ping_broker=16, ping_grafana=13)
-        self.connection_history_deleted_id = connection_history_deleted.id
-        connection_history_deleted.delete()
 
     def test_put_connection_history(self):
         measurement_station_2 = MeasurementStation.objects.get(
