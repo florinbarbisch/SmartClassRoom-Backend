@@ -72,6 +72,14 @@ class SmartClassroomTestCase(TestCase):
             insert_time="2020-01-01T00:00:00+01:00",
             change=-1)
 
+        entrance_event_deleted = EntranceEvent.objects.create(
+            fk_measurement_station=measurement_station_1,
+            time="2021-01-01T00:02:00+01:00",
+            insert_time="2021-01-01T00:02:00+01:00",
+            change=1)
+        self.entrance_event_deleted_id = entrance_event_deleted.id
+        entrance_event_deleted.delete()
+
         ConnectionHistory.objects.create(
             fk_measurement_station=measurement_station_1,
             time="2020-01-01T00:00:00+01:00",
@@ -713,6 +721,12 @@ class EntranceEvent_Get(SmartClassroomTestCase):
             response.data['fk_measurement_station'], measurement_station_1.id)
         self.assertEqual(response.data['change'], -1)
 
+    def test_get_nonexistent_entrance_event(self):
+        response = self.client.get(
+            f'/api/EntranceEvents/{self.entrance_event_deleted_id}/',
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class EntranceEvent_Post(SmartClassroomTestCase):
     """
@@ -742,6 +756,25 @@ class EntranceEvent_Post(SmartClassroomTestCase):
                 '%Y-%m-%dT%H:%M:%S%z'))
         self.assertEqual(entrance_event.change, 1)
 
+    def test_post_entrance_event_bad_request_missing(self):
+        # missing time
+        response = self.client.post('/api/EntranceEvents/',
+                                    {'fk_measurement_station': 1,
+                                        'insert_time': '2020-01-01T00:03:00+01:00',
+                                        'change': 1},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_post_entrance_event_bad_request_format(self):
+        # wrong time format, change needs to be int
+        response = self.client.post('/api/EntranceEvents/',
+                                    {'fk_measurement_station': 1,
+                                        'time': '01-01-2020T00:03:00+01:00',
+                                        'insert_time': '2020-01-01T00:03:00+01:00',
+                                        'change': "plus eins"},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class EntranceEvent_Delete(SmartClassroomTestCase):
     """
@@ -759,6 +792,23 @@ class EntranceEvent_Delete(SmartClassroomTestCase):
         self.assertEqual(EntranceEvent.objects.filter(
             fk_measurement_station=measurement_station_2.id).count(), 0)
 
+    def test_delete_entrance_event_not_found(self):
+        # entrance_event with this id no longer exists
+        response = self.client.delete(
+            f'/api/EntranceEvents/{self.entrance_event_deleted_id}/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_entrance_event_not_found_2(self):
+        # id is string instead of int
+        response = self.client.delete(
+            f'/api/EntranceEvents/asdf/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_delete_entrance_event_not_found_3(self):
+        # wrong url format
+        response = self.client.delete(
+            f'/api/EntranceEvents/asdfd/{self.entrance_event_deleted_id}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class EntranceEvent_Put(SmartClassroomTestCase):
     """
@@ -792,6 +842,48 @@ class EntranceEvent_Put(SmartClassroomTestCase):
                 '%Y-%m-%dT%H:%M:%S%z'))
         self.assertEqual(entrance_event.change, 3)
 
+    def test_put_entrance_event_not_found(self):
+        # entrance_event with this id no longer exists
+        response = self.client.put(
+            f'/api/EntranceEvents/{self.entrance_event_deleted_id}/',
+            {
+                'fk_measurement_station': 1,
+                'time': '2020-01-01T00:01:00+01:00',
+                'insert_time': '2020-01-01T00:01:00+01:00',
+                'change': 3},
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_put_entrance_event_bad_request_missing(self):
+        # missing time
+        measurement_station_2 = MeasurementStation.objects.get(
+            name="Measurement Station 2")
+        entrance_event = EntranceEvent.objects.get(
+            fk_measurement_station=measurement_station_2.id)
+        response = self.client.put(
+            f'/api/EntranceEvents/{entrance_event.id}/',
+            {
+                'fk_measurement_station': 1,
+                'insert_time': '2020-01-01T00:01:00+01:00',
+                'change': 3},
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_put_entrance_event_bad_request_format(self):
+        # wrong time format
+        measurement_station_2 = MeasurementStation.objects.get(
+            name="Measurement Station 2")
+        entrance_event = EntranceEvent.objects.get(
+            fk_measurement_station=measurement_station_2.id)
+        response = self.client.put(
+            f'/api/EntranceEvents/{entrance_event.id}/',
+            {
+                'fk_measurement_station': 1,
+                'time': '01-01-2020T00:01:00+01:00',
+                'insert_time': '2020-01-01T00:01:00+01:00',
+                'change': 3},
+            format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class Measurement_Create(SmartClassroomTestCase):
     """
