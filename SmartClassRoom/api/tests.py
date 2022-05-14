@@ -581,6 +581,10 @@ class MeasurementStation_Get(SmartClassroomTestCase):
         self.assertEqual(response.data['name'], 'Measurement Station 1')
         self.assertEqual(response.data['active'], True)
         self.assertEqual(response.data['fk_classroom'], classroom_1.id)
+        
+    def test_get_nonexisting_measurement_station(self):
+        response = self.client.get('/api/MeasurementStations/9999/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class MeasurementStation_Post(SmartClassroomTestCase):
@@ -601,6 +605,12 @@ class MeasurementStation_Post(SmartClassroomTestCase):
         self.assertEqual(measurement_station_4.active, True)
         self.assertEqual(measurement_station_4.fk_classroom.id, classroom_1.id)
 
+    def test_invalid_station_post(self):
+        response = self.client.post('/api/MeasurementStations/',
+                         {'names': 'Measurement Station 4', 'active': True,},
+                         format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class MeasurementStation_Delete(SmartClassroomTestCase):
     """
@@ -616,6 +626,11 @@ class MeasurementStation_Delete(SmartClassroomTestCase):
         self.assertEqual(MeasurementStation.objects.count(), 2)
         self.assertEqual(MeasurementStation.objects.filter(
             name='Measurement Station 1').count(), 0)
+    
+    def test_delete_nonexisting_measurement_station(self):
+        response = self.client.delete(
+            '/api/MeasurementStations/9999/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class MeasurementStation_Put(SmartClassroomTestCase):
@@ -642,6 +657,12 @@ class MeasurementStation_Put(SmartClassroomTestCase):
         self.assertEqual(
             measurement_station_1a.fk_classroom.name, 'Classroom 2')
 
+    def test_put_invalid_measurment_station(self):
+        response = self.client.put(
+            f'/api/MeasurementStations/99999/',
+            { 'names':'test' },
+            format='json')
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
 
 # CRUD Tests for EntranceEvent
 class EntranceEvent_Get(SmartClassroomTestCase):
@@ -862,7 +883,7 @@ class Measurement_Create(SmartClassroomTestCase):
         measurement_station_1 = MeasurementStation.objects.get(
             name="Measurement Station 1")
         response = self.client.post('/api/Measurements/',
-                                    {"fk_measurement_station": measurement_station_1,
+                                    {"fk_measurement_station": measurement_station_1.id,
                                      "time": "2020-02-02T00:00:00+02:00",
                                      "insert_time": "2020-02-02T00:00:00+02:00",
                                      "co2": 10,
@@ -876,9 +897,14 @@ class Measurement_Create(SmartClassroomTestCase):
             time="2020-02-02T00:00:00+02:00")
         self.assertEqual(Measurement_1.time, datetime.strptime(
             '2020-02-02T00:00:00+02:00', '%Y-%m-%dT%H:%M:%S%z'))
+        
+    def test_create_invalid_measurment(self):
+        response = self.client.post('/api/Measurements/',
+                                    {'names': 'test'},
+                                    format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-# Well doesnt work @ the time with the id
 class Measurement_Read(SmartClassroomTestCase):
     def test_read_measurement(self):
         Measurement_1 = Measurement.objects.get(
@@ -899,15 +925,31 @@ class Measurement_Read(SmartClassroomTestCase):
         response4 = self.client.get(
             f'/api/Measurements/{Measurement_4.id}/', format='json')
 
+        
         self.assertEqual(response1.data['time'], '2020-01-01T00:00:00+01:00')
-        self.assertEqual(response2.data['time'], '2020-01-01T00:00:00+02:00')
+        self.assertEqual(response2.data['time'], '2019-12-31T23:00:00+01:00')
         self.assertEqual(response3.data['time'], '2020-01-01T00:00:00+03:00')
         self.assertEqual(response4.data['time'], '2020-01-01T00:00:00+04:00')
 
-
+    def test_read_invalid_measurement(self):
+        response1 = self.client.get(
+            f'/api/Measurements/9999/', format='json')
+        self.assertEquals(response1.status_code, status.HTTP_404_NOT_FOUND)
+        
 class Measurement_Update(SmartClassroomTestCase):
     def test_put_measurement(self):
-        pass
+        Measurement_1 = Measurement.objects.get(
+            time="2020-01-01T00:00:00+01:00")
+        MeasurementStation.objects.get(
+            name="Measurement Station 2")
+        print(Measurement_1)
+        print('hello')
+        response = self.client.put(
+            f'/api/Measurements/{Measurement_1.id}/', 
+            {'id': 1, 'url': 'http://testserver/api/Measurements/1/', 'fk_measurement_station': 1, 'time': '2020-01-01T00:00:00+01:00', 'insert_time': '2020-01-01T00:00:00+01:00', 'co2': '50.0000000000', 'temperature': '20.0000000000', 'humidity': '30.0000000000', 'motion': True, 'light': '1.0000000000'}
+            , format='json')
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data['co2'], '50.0000000000')
 
 
 class Measurement_Delete(SmartClassroomTestCase):
@@ -917,6 +959,12 @@ class Measurement_Delete(SmartClassroomTestCase):
             time="2020-01-01T00:00:00+01:00")
         MeasurementStation.objects.get(
             name="Measurement Station 2")
-        self.client.delete(
+        response = self.client.delete(
             f'/api/Measurements/{Measurement_1.id}/', format='json')
+        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(is_state, Measurement.objects.all().count() + 1)
+    
+    def test_invalid_delete(self):
+        response = self.client.delete(
+            f'/api/Measurements/9999/', format='json')
+        self.assertEquals(response.status_code, status.HTTP_404_NOT_FOUND)
