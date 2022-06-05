@@ -2,7 +2,8 @@
 
 <img src="https://user-images.githubusercontent.com/32195170/166079709-4a57ce5f-a0fa-4a98-8f06-88b81d868cfe.png" width="auto" height="235">
 
-REST Django Backend
+- REST Django Backend for cde2 Smart Classroom Challenge
+- REST API for wdb Mini Challenge 1
 
 ## Run Django Server
 1. `cd SmartClassRoom`
