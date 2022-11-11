@@ -15,14 +15,18 @@
 2. `python manage.py test`
 
 
+## build and push docker image
+1. `docker build -t smartclassroom-backend .`
+2. `docker tag redstoner2014/smartclassroom-backend:latest`
+3. `docker push redstoner2014/smartclassroom-backend:latest`
+
+
 ## Timescale Docker Installation
 https://docs.timescale.com/install/latest/installation-docker/#set-up-the-timescaledb-extension
 
 1. Command: 
 ```
-docker run -d --name timescaledb -p 5432:5432 \
--v /your/data/dir:/var/lib/postgresql/data \
--e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg14
+docker run -d --name timescaledb -p 5432:5432 -v /your/data/dir:/var/lib/postgresql/data -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg14
 ```
 2. add the database settings to the settings.py in the root dir:
 
