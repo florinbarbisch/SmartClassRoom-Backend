@@ -16,8 +16,7 @@
 
 
 ## build and push docker image
-1. `docker build -t smartclassroom-backend .`
-2. `docker tag redstoner2014/smartclassroom-backend:latest`
+1. `docker build -t redstoner2014/smartclassroom-backend:latest .`
 3. `docker push redstoner2014/smartclassroom-backend:latest`
 
 
