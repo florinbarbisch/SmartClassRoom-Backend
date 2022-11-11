@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-^!jbe!!fuj!@8)9du(5_9!-ehh610(h*wg9te=rcgpnirw^v65
 # The value of the DEBUG will be True by default, but will only be False
 # if the value of the DJANGO_DEBUG environment variable is set to False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'florin.barbisch.ch', '192.168.1.99']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.99']
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -46,8 +46,13 @@ CORS_ALLOW_HEADERS = [
 ]
 if not DEBUG:
     SECRET_KEY = os.environ['secret_key']
-    ALLOWED_HOSTS = ['127.0.0.1', '185.232.68.247',
-                     'localhost', 'django.roulet.dev']
+    ALLOWED_HOSTS = os.environ['allowed_hosts'].split(',')
+
+HOST = os.environ.get('HOST', 'localhost')
+PORT = os.environ.get('PORT', '5432')
+DB_NAME = os.environ.get('DB_NAME', 'smartclassroom')
+USER = os.environ.get('USER', 'postgres')
+PASSWORD = os.environ.get('PASSWORD', 'Welcome12')
 
 # Application definition
 
@@ -117,11 +122,11 @@ if not DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'timescale.db.backends.postgresql',
-            'NAME': 'smartclassroom',
-            'USER': 'postgres',
-            'PASSWORD': 'Welcome12',
-            'HOST': 'florin.barbisch.ch',
-            'PORT': '5432',
+            'NAME': DB_NAME,
+            'USER': USER,
+            'PASSWORD': PASSWORD,
+            'HOST': HOST,
+            'PORT': PORT,
         }
     }
 
@@ -129,11 +134,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'timescale.db.backends.postgresql',
-            'NAME': 'smartclassroom',
-            'USER': 'postgres',
-            'PASSWORD': 'Welcome12',
-            'HOST': 'florin.barbisch.ch',
-            'PORT': '5432',
+            'NAME': DB_NAME,
+            'USER': USER,
+            'PASSWORD': PASSWORD,
+            'HOST': HOST,
+            'PORT': PORT,
             'TEST': {
                 'NAME': 'smartclassroom_test_unittest',
             },
